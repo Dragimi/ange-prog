@@ -11,7 +11,7 @@ public class Bezahlmethode {
     private String beschreibung;
 
     /**
-     *
+     * Jede Bezahlmethode besteht aus einer Bezeichnung und einer kurzen Beschreibung
      * @param bezeichnung
      * @param beschreibung
      */

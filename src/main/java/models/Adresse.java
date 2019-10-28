@@ -11,7 +11,7 @@ public class Adresse {
     private String ort;
 
     /**
-     *
+     * Jede Adresse besteht aus einer Strasse, einer Hausnummer, der Postleitzahl und einem Ort
      * @param strasse
      * @param hausnummer
      * @param plz
