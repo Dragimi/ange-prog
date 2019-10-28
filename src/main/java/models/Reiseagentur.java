@@ -3,7 +3,13 @@ package models;
 import java.util.ArrayList;
 
 /**
+ * Diese Klasse symbolisiert eine Reiseagentur.
+ * Jede Reiseagentur besitzt einen Namen, eine Umsatzsteuernummer und eine {@link Adresse},
+ * <br>
+ * Zudem kann eine Agentur {@link Kunde Kunden} haben.
  *
+ * @see Adresse
+ * @see Kunde
  */
 public class Reiseagentur {
 
@@ -13,6 +19,7 @@ public class Reiseagentur {
     private ArrayList<Kunde> kunden;
 
     /**
+     * Jede Agentur benoetigt eine namen, eine umsatzsteuernummer und eine Adresse
      *
      * @param namen
      * @param ustIdNr
@@ -26,7 +33,7 @@ public class Reiseagentur {
     }
 
     /**
-     *
+     * Fuegt einen {@link Kunde Kunden} in die Liste hinzu.
      * @param kunde
      * @return
      */
@@ -35,6 +42,10 @@ public class Reiseagentur {
         return true;
     }
 
+    /**
+     * Ueberschreibt die toString-Methode
+     * @return String
+     */
     @Override
     public String toString() {
         return "Reiseagentur{\n" +

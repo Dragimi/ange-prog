@@ -1,5 +1,7 @@
 package models;
 
+import utils.Utils;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -30,6 +32,7 @@ public class Kunde {
      * @param email
      */
     public Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse1, String telefonNummer, String email) {
+        this.kundenNummer = Utils.generateRandomKundennummer();
         this.anrede = anrede;
         this.vorname = vorname;
         this.nachname = nachname;
@@ -63,7 +66,7 @@ public class Kunde {
                 "\tanrede='" + anrede + "',\n" +
                 "\tvorname='" + vorname + "',\n" +
                 "\tnachname='" + nachname + "',\n" +
-                "\tgeburtstag=" + geburtstag + "',\n" +
+                "\tgeburtstag=" + Utils.dateToStr(geburtstag) + "',\n" +
                 "\tadresse1=" + adresse1 + ",\n" +
                 "\tadresse2=" + adresse2 + ",\n" +
                 "\ttelefonNummer='" + telefonNummer + "',\n" +
