@@ -84,9 +84,10 @@ public class Kunde {
                 '}';
     }
 
-    /**
+    /*
      * Getter, Setter
      */
+
     public String getKundenNummer() {
         return kundenNummer;
     }

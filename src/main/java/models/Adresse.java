@@ -33,7 +33,7 @@ public class Adresse {
                 "ort='" + ort  + "'}";
     }
 
-    /**
+    /*
      * GETTER, SETTER
      */
 
