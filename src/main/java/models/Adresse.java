@@ -1,7 +1,7 @@
 package models;
 
 /**
- *
+ * Adresse repräsentiert eine physiche Lokalisierung in einem Land.
  */
 public class Adresse {
 

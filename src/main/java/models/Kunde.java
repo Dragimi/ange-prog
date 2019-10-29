@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- *
+ * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
  */
 public class Kunde {
 
@@ -22,14 +22,23 @@ public class Kunde {
     private ArrayList<Bezahlmethode> bezahlmethoden;
 
     /**
+     * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
+     * einer Pflichtadresse, einer Telefonnr., und einer E-Maialdresse.
+     * <br>
+     * Um die zweite Addresse hinzuzufügen, benutze die Methode {@link Kunde#setAdresse2(Adresse)}.
+     * <br>
+     * Um weitere Bezahlmethoden hinzuzfügen benutze, die Methode {@link Kunde#addZahlungsmethode(Bezahlmethode)}.
      *
-     * @param anrede
-     * @param vorname
-     * @param nachname
-     * @param geburtstag
-     * @param adresse1
-     * @param telefonNummer
-     * @param email
+     * @param anrede - Hr. oder Fr.
+     * @param vorname -
+     * @param nachname -
+     * @param geburtstag -
+     * @param adresse1 -
+     * @param telefonNummer -
+     * @param email -
+     *
+     * @see Bezahlmethode
+     * @see Adresse
      */
     public Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse1, String telefonNummer, String email) {
         this.kundenNummer = Utils.generateRandomKundennummer();
