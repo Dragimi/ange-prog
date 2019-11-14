@@ -28,7 +28,7 @@ public class Bezahlmethode {
                 '}';
     }
 
-    /**
+    /*
      * GETTER, SETTER
      */
 

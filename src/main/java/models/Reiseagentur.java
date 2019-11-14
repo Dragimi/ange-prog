@@ -56,7 +56,7 @@ public class Reiseagentur {
                 '}';
     }
 
-    /**
+    /*
      * GETTER, SETTER
      */
 
