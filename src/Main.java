@@ -2,6 +2,8 @@ import models.*;
 import utils.Input;
 import utils.Utils;
 
+import java.sql.SQLOutput;
+
 
 public class Main {
 
@@ -60,6 +62,8 @@ public class Main {
                 case 4: {
                     Kunde k = inputReader.getKundeByKundennummer(magic);
                     System.out.println(k);
+                    System.out.println(k.getReservierungen());
+                    System.out.println(k.getReservierungen());
                     break;
                 }
                 case 7: {
