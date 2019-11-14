@@ -8,24 +8,24 @@ import java.util.Date;
 /**
  * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
  */
-public class Kunde {
+public abstract class Kunde {
 
-    private String kundenNummer;
-    private String anrede;
-    private String vorname;
-    private String nachname;
-    private Date geburtstag;
-    private Adresse adresse1;
-    private Adresse adresse2;
-    private String telefonNummer;
-    private String email;
-    private ArrayList<Bezahlmethode> bezahlmethoden;
+    static final int MAX_NUMBER_OF_RESERVATIONS = 100;
+
+    protected String kundenNummer;
+    protected String anrede;
+    protected String vorname;
+    protected String nachname;
+    protected Date geburtstag;
+    protected Adresse adresse;
+    protected String telefonNummer;
+    protected String email;
+    protected ArrayList<Bezahlmethode> bezahlmethoden;
+    protected ArrayList<Reservierung> reservierungen;
 
     /**
      * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
      * einer Pflichtadresse, einer Telefonnr., und einer E-Maialdresse.
-     * <br>
-     * Um die zweite Addresse hinzuzufügen, benutze die Methode {@link Kunde#setAdresse2(Adresse)}.
      * <br>
      * Um weitere Bezahlmethoden hinzuzfügen benutze, die Methode {@link Kunde#addZahlungsmethode(Bezahlmethode)}.
      *
@@ -33,56 +33,28 @@ public class Kunde {
      * @param vorname -
      * @param nachname -
      * @param geburtstag -
-     * @param adresse1 -
+     * @param adresse -
      * @param telefonNummer -
      * @param email -
      *
      * @see Bezahlmethode
      * @see Adresse
      */
-    public Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse1, String telefonNummer, String email) {
+    protected Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email) {
         this.kundenNummer = Utils.generateRandomKundennummer();
         this.anrede = anrede;
         this.vorname = vorname;
         this.nachname = nachname;
         this.geburtstag = geburtstag;
-        this.adresse1 = adresse1;
+        this.adresse = adresse;
         this.telefonNummer = telefonNummer;
         this.email = email;
-        this.bezahlmethoden = new ArrayList<Bezahlmethode>();
+        this.bezahlmethoden = new ArrayList<>();
+        this.reservierungen = new ArrayList<>();
     }
 
-    /**
-     *
-     * @param methode
-     * @return
-     */
-    public boolean addZahlungsmethode(Bezahlmethode methode) {
-        if (this.bezahlmethoden.size() < 3) {
-            this.bezahlmethoden.add(methode);
-            return true;
-        }
-        else {
-            System.out.println("Kunde besitzt bereits 3 Bezahlmethoden.");
-            return false;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Kunde {\n" +
-                "\tkundenNummer='" + kundenNummer + "',\n" +
-                "\tanrede='" + anrede + "',\n" +
-                "\tvorname='" + vorname + "',\n" +
-                "\tnachname='" + nachname + "',\n" +
-                "\tgeburtstag=" + Utils.dateToStr(geburtstag) + "',\n" +
-                "\tadresse1=" + adresse1 + ",\n" +
-                "\tadresse2=" + adresse2 + ",\n" +
-                "\ttelefonNummer='" + telefonNummer + "',\n" +
-                "\temail='" + email + "',\n" +
-                "\tbezahlmethodenAnzahl=" + bezahlmethoden.size() + "\n" +
-                '}';
-    }
+    abstract public String getName();
+    abstract public boolean addZahlungsmethode(Bezahlmethode methode);
 
     /*
      * Getter, Setter
@@ -128,20 +100,12 @@ public class Kunde {
         this.geburtstag = geburtstag;
     }
 
-    public Adresse getAdresse1() {
-        return adresse1;
+    public Adresse getAdresse() {
+        return adresse;
     }
 
-    public void setAdresse1(Adresse adresse1) {
-        this.adresse1 = adresse1;
-    }
-
-    public Adresse getAdresse2() {
-        return adresse2;
-    }
-
-    public void setAdresse2(Adresse adresse2) {
-        this.adresse2 = adresse2;
+    public void setAdresse(Adresse adresse) {
+        this.adresse = adresse;
     }
 
     public String getTelefonNummer() {
