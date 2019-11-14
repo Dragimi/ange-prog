@@ -1,12 +1,15 @@
 package models;
 
+import utils.Input;
+import utils.Utils;
+
 import java.util.Date;
 
-public class Geschaeftskunden extends Kunde {
+public class Geschaeftskunde extends Kunde {
 
     String firmenname;
 
-    public Geschaeftskunden(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email, String firmenname) {
+    public Geschaeftskunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email, String firmenname) {
         super(anrede, vorname, nachname, geburtstag, adresse, telefonNummer, email);
         this.firmenname = firmenname;
     }
@@ -28,6 +31,19 @@ public class Geschaeftskunden extends Kunde {
         return true;
     }
 
+    public static Geschaeftskunde readGeschaeftsKundeFromInput(Input input) {
+        String anrede = input.read("Anrede (Hr. oder Fr.): ");
+        String firmenname = input.read("Firmenname: ");
+        String vorname = input.read("Vorname: ");
+        String nachname = input.read("Nachname: ");
+        Date geb = input.readDate("Geburtsdatum: ");
+        Adresse adresse = Adresse.readAdresseFromInput(input);
+        String telefonnummer = input.read("Telefonnummer: ");
+        String email = input.read("Email: ");
+
+        return new Geschaeftskunde(anrede, vorname, nachname, geb, adresse, telefonnummer, email, firmenname);
+    }
+
     @Override
     public String toString() {
         return "Geschaeftskunden{" +
@@ -36,11 +52,12 @@ public class Geschaeftskunden extends Kunde {
                 ", anrede='" + anrede + '\'' +
                 ", vorname='" + vorname + '\'' +
                 ", nachname='" + nachname + '\'' +
-                ", geburtstag=" + geburtstag +
+                ", geburtstag=" + Utils.dateToStr(geburtstag) +
                 ", adresse=" + adresse +
                 ", telefonNummer='" + telefonNummer + '\'' +
                 ", email='" + email + '\'' +
                 ", bezahlmethoden=" + bezahlmethoden.size() +
+                ", reservierungen=" + reservierungen.size() +
                 '}';
     }
 }

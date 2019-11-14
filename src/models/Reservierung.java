@@ -1,15 +1,18 @@
 package models;
 
+import utils.Utils;
+
 import java.time.LocalDate;
+import java.util.Date;
 
 public abstract class Reservierung {
 
     protected String reservierungsNr;
-    protected LocalDate localDate;
+    protected Date localDate;
     protected int summe;
 
-    public Reservierung(String reservierungsNr, LocalDate localDate, int summe) {
-        this.reservierungsNr = reservierungsNr;
+    public Reservierung(Date Date, int summe) {
+        this.reservierungsNr = Utils.generateRandomReservierungsNummer();
         this.localDate = localDate;
         this.summe = summe;
     }
@@ -22,11 +25,11 @@ public abstract class Reservierung {
         this.reservierungsNr = reservierungsNr;
     }
 
-    public LocalDate getLocalDate() {
+    public Date getLocalDate() {
         return localDate;
     }
 
-    public void setLocalDate(LocalDate localDate) {
+    public void setLocalDate(Date localDate) {
         this.localDate = localDate;
     }
 

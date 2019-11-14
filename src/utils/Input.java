@@ -1,5 +1,12 @@
 package utils;
 
+
+import models.Kunde;
+import models.Reiseagentur;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Input {
@@ -10,7 +17,10 @@ public class Input {
         scanner = new Scanner(System.in);
     }
 
-    public int readInt(int min, int max) {
+    public int readInt(String msg, int min, int max) {
+        if (msg != null && !msg.isEmpty()) {
+            System.out.println(msg);
+        }
         int input;
         while(true) {
             String inputString = scanner.nextLine();
@@ -27,5 +37,50 @@ public class Input {
             }
         }
         return input;
+    }
+
+    public String read(String msg) {
+        System.out.println(msg);
+        String input;
+        while(true) {
+            input = scanner.nextLine();
+            if (input.isEmpty()) {
+                System.out.println("Ihre Eingabe ist leer. Bitte versuchen Sie es erneut.");
+            }
+            else {
+                break;
+            }
+        }
+        return input;
+    }
+
+    public Date readDate(String msg) {
+        System.out.println(msg + "(dd.MM.yyyy)");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date date;
+        while(true) {
+            String dateString = scanner.nextLine();
+            try {
+                date = simpleDateFormat.parse(dateString);
+                break;
+            } catch (ParseException e) {
+                System.out.println("Ihre Eingabe ist fehlerhaft. Geben Sie das Datum im richtigen Format erneut ein.");
+            }
+        }
+        return date;
+    }
+
+    public Kunde getKundeByKundennummer(Reiseagentur reiseagentur) {
+        System.out.println("Geben Sie die Kundennummer ein: ");
+        while(true) {
+            String kundennummer = scanner.nextLine();
+
+            if (!reiseagentur.getKunden().containsKey(kundennummer)) {
+                System.out.println("Kunde nicht gefunden.");
+            }
+            else {
+                return reiseagentur.getKunden().get(kundennummer);
+            }
+        }
     }
 }

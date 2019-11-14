@@ -4,6 +4,7 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
@@ -21,7 +22,7 @@ public abstract class Kunde {
     protected String telefonNummer;
     protected String email;
     protected ArrayList<Bezahlmethode> bezahlmethoden;
-    protected ArrayList<Reservierung> reservierungen;
+    protected HashMap<String, Reservierung> reservierungen;
 
     /**
      * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
@@ -50,12 +51,24 @@ public abstract class Kunde {
         this.telefonNummer = telefonNummer;
         this.email = email;
         this.bezahlmethoden = new ArrayList<>();
-        this.reservierungen = new ArrayList<>();
+        this.reservierungen = new HashMap<>();
     }
 
     abstract public String getName();
     abstract public boolean addZahlungsmethode(Bezahlmethode methode);
 
+    public void addReservierung(Reservierung reservierung) {
+        this.reservierungen.put(reservierung.reservierungsNr, reservierung);
+    }
+
+    public static void printTableHeader() {
+        System.out.println(String.format("|Nr.         |Vorname        |Nachname       |"));
+        System.out.println(String.format("+------------+---------------+---------------+"));
+    }
+
+    public void printTableRow() {
+        System.out.println(String.format("|%-12s|%-15s|%-15s|", this.kundenNummer, this.vorname, this.nachname));
+    }
     /*
      * Getter, Setter
      */
@@ -130,5 +143,13 @@ public abstract class Kunde {
 
     public void setBezahlmethoden(ArrayList<Bezahlmethode> bezahlmethoden) {
         this.bezahlmethoden = bezahlmethoden;
+    }
+
+    public HashMap<String, Reservierung> getReservierungen() {
+        return reservierungen;
+    }
+
+    public void setReservierungen(HashMap<String, Reservierung> reservierungen) {
+        this.reservierungen = reservierungen;
     }
 }

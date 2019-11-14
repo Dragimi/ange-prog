@@ -1,6 +1,9 @@
 package models;
 
+import utils.Input;
+
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Flugreservierung extends Reservierung {
 
@@ -8,11 +11,21 @@ public class Flugreservierung extends Reservierung {
     private String abflughafen;
     private String zielflughafen;
 
-    public Flugreservierung(String reservierungsNr, LocalDate localDate, int summe, String flugnr, String abflughafen, String zielflughafen) {
-        super(reservierungsNr, localDate, summe);
+    public Flugreservierung(Date date, int summe, String flugnr, String abflughafen, String zielflughafen) {
+        super(date, summe);
         this.flugnr = flugnr;
         this.abflughafen = abflughafen;
         this.zielflughafen = zielflughafen;
+    }
+
+    public static Flugreservierung readFlugreservierungFromInput(Input input) {
+        Date datum = input.readDate("Reservierungsdatum: ");
+        int summe = input.readInt("Summe: ",0, Integer.MAX_VALUE);
+        String flugnr = input.read("Flugnr.");
+        String abflughafen = input.read("Abflughafen: ");
+        String zielflughafen = input.read("Zeilflughafen: ");
+
+        return new Flugreservierung(datum, summe, flugnr, abflughafen, zielflughafen);
     }
 
     public String getFlugnr() {

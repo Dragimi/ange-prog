@@ -44,6 +44,10 @@ public class Utils {
         return generateRandomId("K");
     }
 
+    public static String generateRandomReservierungsNummer() {
+        return generateRandomId("R");
+    }
+
     private static String generateRandomId(String prefix) {
         return String.format("%s-%03d-%03d",
                 prefix,
