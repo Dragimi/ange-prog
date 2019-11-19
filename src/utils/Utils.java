@@ -22,7 +22,7 @@ public class Utils {
         try{
             return new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN).parse(date);
         } catch (ParseException pe) {
-            System.out.println("Der eingegebene Geburtstag ist kein gültiger.");
+            System.out.println("Das eingegebene Datum entspricht nicht dem richtigen Format.");
             return strToDate("01.01.1970");
         }
     }

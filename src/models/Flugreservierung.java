@@ -1,6 +1,7 @@
 package models;
 
 import utils.Input;
+import utils.Utils;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -11,7 +12,7 @@ public class Flugreservierung extends Reservierung {
     private String abflughafen;
     private String zielflughafen;
 
-    public Flugreservierung(Date date, int summe, String flugnr, String abflughafen, String zielflughafen) {
+    public Flugreservierung(Date date, double summe, String flugnr, String abflughafen, String zielflughafen) {
         super(date, summe);
         this.flugnr = flugnr;
         this.abflughafen = abflughafen;

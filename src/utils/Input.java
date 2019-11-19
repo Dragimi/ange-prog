@@ -3,6 +3,7 @@ package utils;
 
 import models.Kunde;
 import models.Reiseagentur;
+import models.Reservierung;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,14 +23,13 @@ public class Input {
             System.out.println(msg);
         }
         int input;
-        while(true) {
+        while (true) {
             String inputString = scanner.nextLine();
             try {
                 input = Integer.parseInt(inputString);
                 if (input < min || input > max) {
                     System.out.println(String.format("Ihre Eingabe ist nicht im richtigen Intervall %02d-%02d", min, max));
-                }
-                else {
+                } else {
                     break;
                 }
             } catch (NumberFormatException e) {
@@ -42,12 +42,11 @@ public class Input {
     public String read(String msg) {
         System.out.println(msg);
         String input;
-        while(true) {
+        while (true) {
             input = scanner.nextLine();
             if (input.isEmpty()) {
                 System.out.println("Ihre Eingabe ist leer. Bitte versuchen Sie es erneut.");
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -58,7 +57,7 @@ public class Input {
         System.out.println(msg + "(dd.MM.yyyy)");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date date;
-        while(true) {
+        while (true) {
             String dateString = scanner.nextLine();
             try {
                 date = simpleDateFormat.parse(dateString);
@@ -72,15 +71,27 @@ public class Input {
 
     public Kunde getKundeByKundennummer(Reiseagentur reiseagentur) {
         System.out.println("Geben Sie die Kundennummer ein: ");
-        while(true) {
-            String kundennummer = scanner.nextLine();
+        String kundennummer = scanner.nextLine();
 
-            if (!reiseagentur.getKunden().containsKey(kundennummer)) {
-                System.out.println("Kunde nicht gefunden.");
-            }
-            else {
-                return reiseagentur.getKunden().get(kundennummer);
+        if (!reiseagentur.getKunden().containsKey(kundennummer)) {
+            System.out.println("Kunde nicht gefunden.");
+            return null;
+        } else {
+            return reiseagentur.getKunden().get(kundennummer);
+        }
+    }
+
+
+    public Reservierung getReservierungByReservierungsnnummer(Reiseagentur reiseagentur) {
+        System.out.println("Geben Sie die Reservierungsnnummer ein: ");
+
+        String reservierungsnummer = scanner.nextLine();
+
+        for (Kunde k : reiseagentur.getKunden().values()) {
+            if (k.getReservierungen().containsKey(reservierungsnummer)) {
+                return k.getReservierungen().get(reservierungsnummer);
             }
         }
+        return null;
     }
 }

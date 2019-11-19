@@ -61,14 +61,57 @@ public abstract class Kunde {
         this.reservierungen.put(reservierung.reservierungsNr, reservierung);
     }
 
-    public static void printTableHeader() {
+    public static void printShortTableHeader() {
         System.out.println(String.format("|Nr.         |Vorname        |Nachname       |"));
         System.out.println(String.format("+------------+---------------+---------------+"));
     }
 
-    public void printTableRow() {
-        System.out.println(String.format("|%-12s|%-15s|%-15s|", this.kundenNummer, this.vorname, this.nachname));
+    public static void printShortTableRow(Kunde k) {
+        System.out.println(String.format("|%-12s|%-15s|%-15s|", k.kundenNummer, k.vorname, k.nachname));
     }
+
+    public static void printLongTableHeader() {
+        System.out.println(String.format("|Nr.         " +
+                "|Typ       " +
+                "|Firmenname          " +
+                "|Anrede " +
+                "|Vorname        " +
+                "|Nachname       " +
+                "|Geburtstag" +
+                "|Adresse                                 " +
+                "|Telefonnummer       " +
+                "|Email                         " +
+                "|Bezahlmethoden" +
+                "|Reservierungen|"));
+        System.out.println(String.format("+------------" +
+                "+----------" +
+                "+--------------------" +
+                "+-------" +
+                "+---------------" +
+                "+---------------" +
+                "+----------" +
+                "+----------------------------------------" +
+                "+--------------------" +
+                "+------------------------------" +
+                "+--------------" +
+                "+--------------|"));
+    }
+
+    public static void printLongTableRow(Kunde k) {
+        System.out.println(String.format("|%-12s|%-10s|%-20s|%-7s|%-15s|%-15s|%-10s|%-40s|%-20s|%-30s|%-14s|%-14s|", k.kundenNummer,
+                (k instanceof Privatkunde) ? "privat" : "geschäft",
+                (k instanceof Geschaeftskunde) ? ((Geschaeftskunde) k).firmenname : "",
+                k.anrede,
+                k.vorname,
+                k.nachname,
+                Utils.dateToStr(k.geburtstag),
+                k.adresse.shortStringRepresentation(),
+                k.telefonNummer,
+                k.email,
+                k.bezahlmethoden.size(),
+                k.reservierungen.size()));
+    }
+
     /*
      * Getter, Setter
      */

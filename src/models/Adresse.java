@@ -44,6 +44,10 @@ public class Adresse {
                 "ort='" + ort  + "'}";
     }
 
+    public String shortStringRepresentation() {
+        return String.format("%s %s, %d %s", this.strasse, this.hausnummer, this.plz, this.ort);
+    }
+
     /*
      * GETTER, SETTER
      */
