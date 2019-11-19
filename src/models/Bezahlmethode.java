@@ -7,7 +7,7 @@ package models;
  */
 public class Bezahlmethode {
 
-    private String bezeichnung;
+    private PaymentType bezeichnung;
     private String beschreibung;
 
     /**
@@ -15,7 +15,7 @@ public class Bezahlmethode {
      * @param bezeichnung
      * @param beschreibung
      */
-    public Bezahlmethode(String bezeichnung, String beschreibung) {
+    public Bezahlmethode(PaymentType bezeichnung, String beschreibung) {
         this.bezeichnung = bezeichnung;
         this.beschreibung = beschreibung;
     }
@@ -28,15 +28,15 @@ public class Bezahlmethode {
                 '}';
     }
 
-    /**
+    /*
      * GETTER, SETTER
      */
 
-    public String getBezeichnung() {
+    public PaymentType getBezeichnung() {
         return bezeichnung;
     }
 
-    public void setBezeichnung(String bezeichnung) {
+    public void setBezeichnung(PaymentType bezeichnung) {
         this.bezeichnung = bezeichnung;
     }
 

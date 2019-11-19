@@ -1,7 +1,9 @@
 package models;
 
+import utils.Input;
+
 /**
- *
+ * Adresse repräsentiert eine physiche Lokalisierung in einem Land.
  */
 public class Adresse {
 
@@ -24,6 +26,15 @@ public class Adresse {
         this.ort = ort;
     }
 
+    public static Adresse readAdresseFromInput(Input input) {
+        String strasse = input.read("Strasse: ");
+        String hausnummer = input.read("Hausnummer: ");
+        int plz = input.readInt("Plz: ", 10000, 99999);
+        String ort = input.read("Ort");
+
+        return new Adresse(strasse, hausnummer, plz, ort);
+    }
+
     @Override
     public String toString() {
         return "Adresse{" +
@@ -33,7 +44,11 @@ public class Adresse {
                 "ort='" + ort  + "'}";
     }
 
-    /**
+    public String shortStringRepresentation() {
+        return String.format("%s %s, %d %s", this.strasse, this.hausnummer, this.plz, this.ort);
+    }
+
+    /*
      * GETTER, SETTER
      */
 
