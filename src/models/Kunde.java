@@ -4,28 +4,29 @@ import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
  */
-public class Kunde {
+public abstract class Kunde {
 
-    private String kundenNummer;
-    private String anrede;
-    private String vorname;
-    private String nachname;
-    private Date geburtstag;
-    private Adresse adresse1;
-    private Adresse adresse2;
-    private String telefonNummer;
-    private String email;
-    private ArrayList<Bezahlmethode> bezahlmethoden;
+    static final int MAX_NUMBER_OF_RESERVATIONS = 100;
+
+    protected String kundenNummer;
+    protected String anrede;
+    protected String vorname;
+    protected String nachname;
+    protected Date geburtstag;
+    protected Adresse adresse;
+    protected String telefonNummer;
+    protected String email;
+    protected ArrayList<Bezahlmethode> bezahlmethoden;
+    protected HashMap<String, Reservierung> reservierungen;
 
     /**
      * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
      * einer Pflichtadresse, einer Telefonnr., und einer E-Maialdresse.
-     * <br>
-     * Um die zweite Addresse hinzuzufügen, benutze die Methode {@link Kunde#setAdresse2(Adresse)}.
      * <br>
      * Um weitere Bezahlmethoden hinzuzfügen benutze, die Methode {@link Kunde#addZahlungsmethode(Bezahlmethode)}.
      *
@@ -33,55 +34,82 @@ public class Kunde {
      * @param vorname -
      * @param nachname -
      * @param geburtstag -
-     * @param adresse1 -
+     * @param adresse -
      * @param telefonNummer -
      * @param email -
      *
      * @see Bezahlmethode
      * @see Adresse
      */
-    public Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse1, String telefonNummer, String email) {
+    protected Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email) {
         this.kundenNummer = Utils.generateRandomKundennummer();
         this.anrede = anrede;
         this.vorname = vorname;
         this.nachname = nachname;
         this.geburtstag = geburtstag;
-        this.adresse1 = adresse1;
+        this.adresse = adresse;
         this.telefonNummer = telefonNummer;
         this.email = email;
-        this.bezahlmethoden = new ArrayList<Bezahlmethode>();
+        this.bezahlmethoden = new ArrayList<>();
+        this.reservierungen = new HashMap<>();
     }
 
-    /**
-     *
-     * @param methode
-     * @return
-     */
-    public boolean addZahlungsmethode(Bezahlmethode methode) {
-        if (this.bezahlmethoden.size() < 3) {
-            this.bezahlmethoden.add(methode);
-            return true;
-        }
-        else {
-            System.out.println("Kunde besitzt bereits 3 Bezahlmethoden.");
-            return false;
-        }
+    abstract public String getName();
+    abstract public boolean addZahlungsmethode(Bezahlmethode methode);
+
+    public void addReservierung(Reservierung reservierung) {
+        this.reservierungen.put(reservierung.reservierungsNr, reservierung);
     }
 
-    @Override
-    public String toString() {
-        return "Kunde {\n" +
-                "\tkundenNummer='" + kundenNummer + "',\n" +
-                "\tanrede='" + anrede + "',\n" +
-                "\tvorname='" + vorname + "',\n" +
-                "\tnachname='" + nachname + "',\n" +
-                "\tgeburtstag=" + Utils.dateToStr(geburtstag) + "',\n" +
-                "\tadresse1=" + adresse1 + ",\n" +
-                "\tadresse2=" + adresse2 + ",\n" +
-                "\ttelefonNummer='" + telefonNummer + "',\n" +
-                "\temail='" + email + "',\n" +
-                "\tbezahlmethodenAnzahl=" + bezahlmethoden.size() + "\n" +
-                '}';
+    public static void printShortTableHeader() {
+        System.out.println(String.format("|Nr.         |Vorname        |Nachname       |"));
+        System.out.println(String.format("+------------+---------------+---------------+"));
+    }
+
+    public static void printShortTableRow(Kunde k) {
+        System.out.println(String.format("|%-12s|%-15s|%-15s|", k.kundenNummer, k.vorname, k.nachname));
+    }
+
+    public static void printLongTableHeader() {
+        System.out.println(String.format("|Nr.         " +
+                "|Typ       " +
+                "|Firmenname          " +
+                "|Anrede " +
+                "|Vorname        " +
+                "|Nachname       " +
+                "|Geburtstag" +
+                "|Adresse                                 " +
+                "|Telefonnummer       " +
+                "|Email                         " +
+                "|Bezahlmethoden" +
+                "|Reservierungen|"));
+        System.out.println(String.format("+------------" +
+                "+----------" +
+                "+--------------------" +
+                "+-------" +
+                "+---------------" +
+                "+---------------" +
+                "+----------" +
+                "+----------------------------------------" +
+                "+--------------------" +
+                "+------------------------------" +
+                "+--------------" +
+                "+--------------|"));
+    }
+
+    public static void printLongTableRow(Kunde k) {
+        System.out.println(String.format("|%-12s|%-10s|%-20s|%-7s|%-15s|%-15s|%-10s|%-40s|%-20s|%-30s|%-14s|%-14s|", k.kundenNummer,
+                (k instanceof Privatkunde) ? "privat" : "geschäft",
+                (k instanceof Geschaeftskunde) ? ((Geschaeftskunde) k).firmenname : "",
+                k.anrede,
+                k.vorname,
+                k.nachname,
+                Utils.dateToStr(k.geburtstag),
+                k.adresse.shortStringRepresentation(),
+                k.telefonNummer,
+                k.email,
+                k.bezahlmethoden.size(),
+                k.reservierungen.size()));
     }
 
     /*
@@ -128,20 +156,12 @@ public class Kunde {
         this.geburtstag = geburtstag;
     }
 
-    public Adresse getAdresse1() {
-        return adresse1;
+    public Adresse getAdresse() {
+        return adresse;
     }
 
-    public void setAdresse1(Adresse adresse1) {
-        this.adresse1 = adresse1;
-    }
-
-    public Adresse getAdresse2() {
-        return adresse2;
-    }
-
-    public void setAdresse2(Adresse adresse2) {
-        this.adresse2 = adresse2;
+    public void setAdresse(Adresse adresse) {
+        this.adresse = adresse;
     }
 
     public String getTelefonNummer() {
@@ -166,5 +186,13 @@ public class Kunde {
 
     public void setBezahlmethoden(ArrayList<Bezahlmethode> bezahlmethoden) {
         this.bezahlmethoden = bezahlmethoden;
+    }
+
+    public HashMap<String, Reservierung> getReservierungen() {
+        return reservierungen;
+    }
+
+    public void setReservierungen(HashMap<String, Reservierung> reservierungen) {
+        this.reservierungen = reservierungen;
     }
 }

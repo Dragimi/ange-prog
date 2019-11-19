@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Diese Klasse symbolisiert eine Reiseagentur.
@@ -16,7 +17,7 @@ public class Reiseagentur {
     private String namen;
     private String ustIdNr;
     private Adresse adresse;
-    private ArrayList<Kunde> kunden;
+    private HashMap<String, Kunde> kunden;
 
     /**
      * Jede Agentur benoetigt eine namen, eine umsatzsteuernummer und eine Adresse
@@ -29,7 +30,7 @@ public class Reiseagentur {
         this.namen = namen;
         this.ustIdNr = ustIdNr;
         this.adresse = adresse;
-        this.kunden = new ArrayList<Kunde>();
+        this.kunden = new HashMap<>();
     }
 
     /**
@@ -38,7 +39,7 @@ public class Reiseagentur {
      * @return
      */
     public boolean addKunde(Kunde kunde) {
-        this.kunden.add(kunde);
+        this.kunden.put(kunde.kundenNummer, kunde);
         return true;
     }
 
@@ -84,11 +85,11 @@ public class Reiseagentur {
         this.adresse = adresse;
     }
 
-    public ArrayList<Kunde> getKunden() {
+    public HashMap<String, Kunde> getKunden() {
         return kunden;
     }
 
-    public void setKunden(ArrayList<Kunde> kunden) {
+    public void setKunden(HashMap<String, Kunde> kunden) {
         this.kunden = kunden;
     }
 }
