@@ -2,10 +2,10 @@ import models.*;
 import utils.Input;
 import utils.Utils;
 
+import java.lang.reflect.Array;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -25,18 +25,11 @@ public class Main {
         Input inputReader = new Input();
         int auswahl = -1;
 
-        while (auswahl != 7) {
+        while (auswahl != 10) {
             printMenu();
-            auswahl = inputReader.readInt(null, 0, 7);
+            auswahl = inputReader.readInt(null, 1, 10);
 
             switch (auswahl) {
-                case 0: {
-                    Kunde.printShortTableHeader();
-                    for (Kunde k : magic.getKunden().values()) {
-                        Kunde.printShortTableRow(k);
-                    }
-                    break;
-                }
                 case 1: {
                     System.out.println("Füllen Sie das folgende Formular aus: ");
                     Privatkunde kunde = Privatkunde.readPrivatKundeFromInput(inputReader);
@@ -83,7 +76,11 @@ public class Main {
                 }
                 case 5: {
                     String name = inputReader.read("Geben Sie den Namen (Vorname Nachname) ein: ");
-                    Set<Kunde> filteredList = magic.getKunden().values().stream().filter((it) -> it.getName().trim().equalsIgnoreCase(name.trim())).collect(Collectors.toSet());
+                    Set<Kunde> filteredList = magic.getKunden()
+                            .values()
+                            .stream()
+                            .filter((it) -> it.getName().trim().equalsIgnoreCase(name.trim()))
+                            .collect(Collectors.toSet());
                     if (filteredList.isEmpty()) {
                         System.out.println("Keinen Kunden mit dem eingegeben Namen gefunden.");
                     }
@@ -116,6 +113,55 @@ public class Main {
                     break;
                 }
                 case 7: {
+                    // sortieren der Kunden
+                    List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
+                    Collections.sort(sortedList); // sortiert
+
+                    Kunde.printShortTableHeader();
+                    for (Kunde k : sortedList) {
+                        Kunde.printShortTableRow(k);
+                    }
+                    break;
+                }
+                case 8: {
+                    // bezahlmethoden
+                    HashMap<PaymentType, Integer> payments = new HashMap<>();
+                    for(PaymentType p: PaymentType.values()) {
+                        payments.put(p, 0);
+                    }
+
+                    for(Kunde k: magic.getKunden().values()) {
+                        for(Bezahlmethode b: k.getBezahlmethoden()) {
+                            payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
+                        }
+                    }
+
+                    Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
+
+                    for(Map.Entry<PaymentType, Integer> e: sortedPayments.entrySet()) {
+                        System.out.printf("%10s : %3s\n", e.getKey(), e.getValue());
+                    }
+                }
+                case 9: {
+                    // Alle reservierungen von einem Datum sortiert nach nachnamen
+                    LocalDate date = inputReader.readDate("Von welchem Datum sind Reservierungen gesucht?");
+
+                    List<Kunde> sortedKunden = magic.getKunden().values()
+                            .stream()
+                            .sorted(Comparator.comparing(Kunde::getNachname))
+                            .collect(Collectors.toList());
+
+                    for(Kunde k: sortedKunden) {
+                        for(Reservierung r: k.getReservierungen().values()) {
+                            if (r.getDatum().equals(date)) {
+                                System.out.println(String.format("%30s: %s", k.getNachname(), r.toString()));
+                            }
+                        }
+                    }
+
+
+                }
+                case 10: {
                     System.out.println();
                     System.out.println("Auf Wiedersehen.");
                     break;
@@ -126,18 +172,19 @@ public class Main {
         }
     }
 
-
     private static void printMenu() {
         System.out.println("+==================================================================+");
-        System.out.println("| (00) Alle Kunden anzeigen                                        |");
         System.out.println("| (01) Privatkunde anlegen                                         |");
         System.out.println("| (02) Geschäftskunde anlegen                                      |");
         System.out.println("| (03) Reservierung anlegen und Kundennummer zuordnen              |");
         System.out.println("| (04) Kunde mit Reservierungen anzeigen (Auswahl durch Kundennr.) |");
         System.out.println("| (05) Kunde mit Reservierungen anzeigen (Auswahl durch Name)      |");
         System.out.println("| (06) Reservierung anzeigen (Auswahl durch Reservierungsnr.)      |");
+        System.out.println("| (07) Alle Kunden sortiert nach Namen anzeigen                    |");
+        System.out.println("| (08) Übersicht aller Bezahlmethoden                              |");
+        System.out.println("| (09) Alle Reservierungen eines Datums (sortiert nach Nachnamen)  |");
         System.out.println("|                                                                  |");
-        System.out.println("| (07) Beenden                                                     |");
+        System.out.println("| (10) Beenden                                                     |");
         System.out.println("+==================================================================+");
     }
 
@@ -152,12 +199,12 @@ public class Main {
                 "max.mustermann@gmail.com");
         kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.PAYPAL, "Konto: " + kunde1.getEmail()));
         kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.VISA, "4235 7453 1234 7456"));
-        kunde1.addReservierung(new Hotelreservierung(Utils.strToDate("29.11.2019"), 403.35, "Estrel Hotel Berlin", Duration.of(2, DAYS)));
+        kunde1.addReservierung(new Hotelreservierung(Utils.strToDate("12.05.2020"), 403.35, "Estrel Hotel Berlin", Duration.of(2, DAYS)));
 
 
         Kunde kunde2 = new Privatkunde("Fr.",
                 "Melanie",
-                "Mustermann",
+                "Meier",
                 Utils.strToDate("14.08.1994"),
                 new Adresse("Ernst-Ruska-Ufer", "14", 40124, "München"),
                 "0163 646 123 24",
@@ -175,7 +222,7 @@ public class Main {
                 "d.m@gmail.com");
         kunde3.addReservierung(new Flugreservierung(Utils.strToDate("17.06.2020"), 120.53, "L234", "Köln", "TXL - Tefel Berlin"));
         kunde3.addReservierung(new Hotelreservierung(Utils.strToDate("17.06.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
-        kunde3.addReservierung(new Flugreservierung(Utils.strToDate("21.06.2020"), 120.53, "L523", "TXL - Tefel Berlin", "Köln"));
+        kunde3.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "L523", "TXL - Tefel Berlin", "Köln"));
 
         Kunde kunde4 = new Geschaeftskunde("Prof. Dr.",
                 "Andreas",

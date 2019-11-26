@@ -3,17 +3,16 @@ package models;
 import utils.Utils;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public abstract class Reservierung {
 
     protected String reservierungsNr;
-    protected Date localDate;
+    protected LocalDate datum;
     protected double summe;
 
-    public Reservierung(Date localDate, double summe) {
+    public Reservierung(LocalDate datum, double summe) {
         this.reservierungsNr = Utils.generateRandomReservierungsNummer();
-        this.localDate = localDate;
+        this.datum = datum;
         this.summe = summe;
     }
 
@@ -35,9 +34,27 @@ public abstract class Reservierung {
 
         System.out.println(String.format("|%-16s|%-10s|%-10s|%-70s|",
                 r.reservierungsNr,
-                Utils.dateToStr(r.localDate),
+                Utils.dateToStr(r.datum),
                 r.summe,
                 bemerkung));
+    }
+
+    @Override
+    public String toString() {
+        String bemerkung = "";
+        if (this instanceof Flugreservierung) {
+            Flugreservierung f = (Flugreservierung) this;
+            bemerkung = String.format("%s, von %s nach %s", f.getFlugnr(), f.getAbflughafen(), f.getZielflughafen());
+        } else if (this instanceof Hotelreservierung) {
+            Hotelreservierung h = (Hotelreservierung) this;
+            bemerkung = String.format("%s für %s", h.hotelname, h.reisedauer);
+        }
+
+        return String.format("%s, %s, %s, %s",
+                this.reservierungsNr,
+                Utils.dateToStr(this.datum),
+                this.summe,
+                bemerkung);
     }
 
     public String getReservierungsNr() {
@@ -48,12 +65,12 @@ public abstract class Reservierung {
         this.reservierungsNr = reservierungsNr;
     }
 
-    public Date getLocalDate() {
-        return localDate;
+    public LocalDate getDatum() {
+        return datum;
     }
 
-    public void setLocalDate(Date localDate) {
-        this.localDate = localDate;
+    public void setDatum(LocalDate datum) {
+        this.datum = datum;
     }
 
     public double getSumme() {

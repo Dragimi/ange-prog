@@ -2,14 +2,14 @@ package models;
 
 import utils.Utils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
  * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
  */
-public abstract class Kunde {
+public abstract class Kunde implements Comparable<Kunde> {
 
     static final int MAX_NUMBER_OF_RESERVATIONS = 100;
 
@@ -17,7 +17,7 @@ public abstract class Kunde {
     protected String anrede;
     protected String vorname;
     protected String nachname;
-    protected Date geburtstag;
+    protected LocalDate geburtstag;
     protected Adresse adresse;
     protected String telefonNummer;
     protected String email;
@@ -30,18 +30,17 @@ public abstract class Kunde {
      * <br>
      * Um weitere Bezahlmethoden hinzuzfügen benutze, die Methode {@link Kunde#addZahlungsmethode(Bezahlmethode)}.
      *
-     * @param anrede - Hr. oder Fr.
-     * @param vorname -
-     * @param nachname -
-     * @param geburtstag -
-     * @param adresse -
+     * @param anrede        - Hr. oder Fr.
+     * @param vorname       -
+     * @param nachname      -
+     * @param geburtstag    -
+     * @param adresse       -
      * @param telefonNummer -
-     * @param email -
-     *
+     * @param email         -
      * @see Bezahlmethode
      * @see Adresse
      */
-    protected Kunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email) {
+    protected Kunde(String anrede, String vorname, String nachname, LocalDate geburtstag, Adresse adresse, String telefonNummer, String email) {
         this.kundenNummer = Utils.generateRandomKundennummer();
         this.anrede = anrede;
         this.vorname = vorname;
@@ -52,13 +51,6 @@ public abstract class Kunde {
         this.email = email;
         this.bezahlmethoden = new ArrayList<>();
         this.reservierungen = new HashMap<>();
-    }
-
-    abstract public String getName();
-    abstract public boolean addZahlungsmethode(Bezahlmethode methode);
-
-    public void addReservierung(Reservierung reservierung) {
-        this.reservierungen.put(reservierung.reservierungsNr, reservierung);
     }
 
     public static void printShortTableHeader() {
@@ -112,6 +104,25 @@ public abstract class Kunde {
                 k.reservierungen.size()));
     }
 
+    abstract public String getName();
+
+    public boolean addZahlungsmethode(Bezahlmethode methode) {
+        this.bezahlmethoden.add(methode);
+        return true;
+    }
+
+    public void addReservierung(Reservierung reservierung) {
+        this.reservierungen.put(reservierung.reservierungsNr, reservierung);
+    }
+
+    @Override
+    public int compareTo(Kunde o) {
+        if (this.vorname.compareTo(o.vorname) == 0) {
+            return this.nachname.compareTo(o.nachname);
+        }
+        return this.vorname.compareTo(o.vorname);
+    }
+
     /*
      * Getter, Setter
      */
@@ -148,11 +159,11 @@ public abstract class Kunde {
         this.nachname = nachname;
     }
 
-    public Date getGeburtstag() {
+    public LocalDate getGeburtstag() {
         return geburtstag;
     }
 
-    public void setGeburtstag(Date geburtstag) {
+    public void setGeburtstag(LocalDate geburtstag) {
         this.geburtstag = geburtstag;
     }
 

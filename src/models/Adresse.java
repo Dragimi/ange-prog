@@ -14,6 +14,7 @@ public class Adresse {
 
     /**
      * Jede Adresse besteht aus einer Strasse, einer Hausnummer, der Postleitzahl und einem Ort
+     *
      * @param strasse
      * @param hausnummer
      * @param plz
@@ -41,7 +42,7 @@ public class Adresse {
                 "strasse='" + strasse + "', " +
                 "hausnummer='" + hausnummer + "', " +
                 "plz=" + plz + ", " +
-                "ort='" + ort  + "'}";
+                "ort='" + ort + "'}";
     }
 
     public String shortStringRepresentation() {
