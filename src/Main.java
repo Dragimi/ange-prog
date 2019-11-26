@@ -233,6 +233,7 @@ public class Main {
                 "andreas.mueller@spotify.com",
                 "Spotify Inc.");
         kunde4.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
+        kunde4.addReservierung(new Hotelreservierung(Utils.strToDate("17.06.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
 
         Kunde kunde5 = new Geschaeftskunde("Hr.",
                 "Peter",
@@ -243,6 +244,8 @@ public class Main {
                 "p.schulz@audi.de",
                 "Audi GmbH");
         kunde5.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
+        kunde5.addReservierung(new Hotelreservierung(Utils.strToDate("31.03.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
+        kunde5.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "L523", "TXL - Tegel Berlin", "Köln"));
 
         Kunde kunde6 = new Geschaeftskunde("Fr.",
                 "Simone",
@@ -252,7 +255,11 @@ public class Main {
                 "0178 872368235",
                 "simone.meier@zf.de",
                 "ZF Friedrichshafen AG");
-        kunde5.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Post"));
+        kunde6.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Post"));
+        kunde6.addReservierung(new Hotelreservierung(Utils.strToDate("31.03.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
+        kunde6.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "L523", "TXL - Tegel Berlin", "Köln"));
+        kunde6.addReservierung(new Hotelreservierung(Utils.strToDate("10.01.2020"), 5334.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
+        kunde6.addReservierung(new Hotelreservierung(Utils.strToDate("17.06.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(6, DAYS)));
 
         magic.addKunde(kunde1);
         magic.addKunde(kunde2);
