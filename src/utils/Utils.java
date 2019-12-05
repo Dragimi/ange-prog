@@ -2,9 +2,10 @@ package utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 /**
  * Hier werden ein paar hilfreiche Methoden gesammmelt
@@ -18,10 +19,11 @@ public class Utils {
      * @param date
      * @return
      */
-    public static Date strToDate(String date) {
+    public static LocalDate strToDate(String date) {
         try{
-            return new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN).parse(date);
-        } catch (ParseException pe) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            return LocalDate.parse(date, formatter);
+        } catch (DateTimeParseException pe) {
             System.out.println("Das eingegebene Datum entspricht nicht dem richtigen Format.");
             return strToDate("01.01.1970");
         }
@@ -32,8 +34,8 @@ public class Utils {
      * @param date
      * @return dd.MM.yyyy Reprasentation eines Datums
      */
-    public static String dateToStr(Date date) {
-        return new SimpleDateFormat("dd.MM.yyyy").format(date);
+    public static String dateToStr(LocalDate date) {
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(date);
     }
 
     /**
@@ -53,5 +55,18 @@ public class Utils {
                 prefix,
                 (new Random()).nextInt(999) + 1,
                 (new Random()).nextInt(999) + 1);
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValues(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+        Collections.reverse(list);
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 }

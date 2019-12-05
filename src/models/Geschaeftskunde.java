@@ -3,32 +3,15 @@ package models;
 import utils.Input;
 import utils.Utils;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Geschaeftskunde extends Kunde {
 
     String firmenname;
 
-    public Geschaeftskunde(String anrede, String vorname, String nachname, Date geburtstag, Adresse adresse, String telefonNummer, String email, String firmenname) {
+    public Geschaeftskunde(String anrede, String vorname, String nachname, LocalDate geburtstag, Adresse adresse, String telefonNummer, String email, String firmenname) {
         super(anrede, vorname, nachname, geburtstag, adresse, telefonNummer, email);
         this.firmenname = firmenname;
-    }
-
-    public String getName() {
-        return String.format("%s %s - %s", this.vorname, this.nachname, this.firmenname);
-    }
-
-    public boolean addZahlungsmethode(Bezahlmethode methode) {
-        if (this.bezahlmethoden.size() >= 1) {
-            System.out.println("Es ist bereits eine Bezahlmethode hinzugefügt worden. Maximale Anzahl erreicht.");
-            return false;
-        }
-        if (!methode.getBezeichnung().equals(PaymentType.RECHNUNG)) {
-            System.out.println("Geschäftskunden können nur RECHNUNG als Bezahlmethode wählen.");
-            return false;
-        }
-        this.bezahlmethoden.add(methode);
-        return true;
     }
 
     public static Geschaeftskunde readGeschaeftsKundeFromInput(Input input) {
@@ -36,12 +19,16 @@ public class Geschaeftskunde extends Kunde {
         String firmenname = input.read("Firmenname: ");
         String vorname = input.read("Vorname: ");
         String nachname = input.read("Nachname: ");
-        Date geb = input.readDate("Geburtsdatum: ");
+        LocalDate geb = input.readDate("Geburtsdatum: ");
         Adresse adresse = Adresse.readAdresseFromInput(input);
         String telefonnummer = input.read("Telefonnummer: ");
         String email = input.read("Email: ");
 
         return new Geschaeftskunde(anrede, vorname, nachname, geb, adresse, telefonnummer, email, firmenname);
+    }
+
+    public String getName() {
+        return String.format("%s %s - %s", this.vorname, this.nachname, this.firmenname);
     }
 
     @Override
