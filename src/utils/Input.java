@@ -84,7 +84,6 @@ public class Input {
         }
     }
 
-
     public Reservierung getReservierungByReservierungsnnummer(Reiseagentur reiseagentur) {
         System.out.println("Geben Sie die Reservierungsnnummer ein: ");
 
@@ -96,5 +95,9 @@ public class Input {
             }
         }
         return null;
+    }
+
+    public void close() {
+        this.scanner.close();
     }
 }

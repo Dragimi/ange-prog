@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-
 public class Main {
 
     public static void main(String[] args) {
@@ -29,165 +28,14 @@ public class Main {
             printMenu();
             auswahl = inputReader.readInt(null, 1, 10);
 
-            switch (auswahl) {
-                case 1: {
-                    System.out.println("Füllen Sie das folgende Formular aus: ");
-                    Privatkunde kunde = Privatkunde.readPrivatKundeFromInput(inputReader);
-                    magic.addKunde(kunde);
-                    System.out.println("Privatkunde wurde erfolgreich erstellt.");
-                    break;
-                }
-                case 2: {
-                    System.out.println("Füllen Sie das folgende Formular aus: ");
-                    Geschaeftskunde kunde = Geschaeftskunde.readGeschaeftsKundeFromInput(inputReader);
-                    magic.addKunde(kunde);
-                    System.out.println("Geschäftskunde wurde erfolgreich erstellt.");
-                    break;
-                }
-                case 3: {
-                    int reservierungsart = inputReader.readInt("0: Flug oder 1: Hotel  -  Reservierung", 0, 1);
-                    Reservierung reservierung;
-                    if (reservierungsart == 0) {
-                        reservierung = Flugreservierung.readFlugreservierungFromInput(inputReader);
-                    } else {
-                        reservierung = Hotelreservierung.readHotelreservierungFromInput(inputReader);
-                    }
-                    Kunde kunde = inputReader.getKundeByKundennummer(magic);
-                    kunde.addReservierung(reservierung);
-                    System.out.println("Reservierung wurde erfolgreich erstellt und dem Kunden mit der Nummer '" + kunde.getKundenNummer() + "' zugeordnet");
-                    break;
-                }
-                case 4: {
-                    Kunde k = inputReader.getKundeByKundennummer(magic);
-                    if (k != null) {
-                        Kunde.printLongTableHeader();
-                        Kunde.printLongTableRow(k);
-                        System.out.println();
-
-                        if (!k.getReservierungen().isEmpty()) {
-                            Reservierung.printLongTableHeader();
-                            for (Reservierung r : k.getReservierungen().values()) {
-                                Reservierung.printLongTableRow(r);
-                            }
-                        }
-                    }
-                    System.out.println();
-                    break;
-                }
-                case 5: {
-                    String name = inputReader.read("Geben Sie den Namen (Vorname Nachname) ein: ");
-                    Set<Kunde> filteredList = magic.getKunden()
-                            .values()
-                            .stream()
-                            .filter((it) -> it.getName().trim().equalsIgnoreCase(name.trim()))
-                            .collect(Collectors.toSet());
-                    if (filteredList.isEmpty()) {
-                        System.out.println("Keinen Kunden mit dem eingegeben Namen gefunden.");
-                    }
-                    else {
-                        Kunde.printLongTableHeader();
-                        for(Kunde k: filteredList) {
-                            Kunde.printLongTableRow(k);
-
-                            if (!k.getReservierungen().isEmpty()) {
-                                System.out.println();
-                                Reservierung.printLongTableHeader();
-                                for (Reservierung r : k.getReservierungen().values()) {
-                                    Reservierung.printLongTableRow(r);
-                                }
-                            }
-                        }
-                    }
-                    System.out.println();
-                    break;
-                }
-                case 6: {
-                    Reservierung r = inputReader.getReservierungByReservierungsnnummer(magic);
-                    if (r != null) {
-                        Reservierung.printLongTableHeader();
-                        Reservierung.printLongTableRow(r);
-                    }
-                    else {
-                        System.out.println("Keine Reservierung mit der eingegebenen Nummer gefunden.");
-                    }
-                    break;
-                }
-                case 7: {
-                    // sortieren der Kunden
-                    List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
-                    Collections.sort(sortedList); // sortiert
-
-                    Kunde.printShortTableHeader();
-                    for (Kunde k : sortedList) {
-                        Kunde.printShortTableRow(k);
-                    }
-                    break;
-                }
-                case 8: {
-                    // bezahlmethoden
-                    HashMap<PaymentType, Integer> payments = new HashMap<>();
-                    for(PaymentType p: PaymentType.values()) {
-                        payments.put(p, 0);
-                    }
-
-                    for(Kunde k: magic.getKunden().values()) {
-                        for(Bezahlmethode b: k.getBezahlmethoden()) {
-                            payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
-                        }
-                    }
-
-                    Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
-
-                    for(Map.Entry<PaymentType, Integer> e: sortedPayments.entrySet()) {
-                        System.out.printf("%10s : %3s\n", e.getKey(), e.getValue());
-                    }
-                }
-                case 9: {
-                    // Alle reservierungen von einem Datum sortiert nach nachnamen
-                    LocalDate date = inputReader.readDate("Von welchem Datum sind Reservierungen gesucht?");
-
-                    List<Kunde> sortedKunden = magic.getKunden().values()
-                            .stream()
-                            .sorted(Comparator.comparing(Kunde::getNachname))
-                            .collect(Collectors.toList());
-
-                    for(Kunde k: sortedKunden) {
-                        for(Reservierung r: k.getReservierungen().values()) {
-                            if (r.getDatum().equals(date)) {
-                                System.out.println(String.format("%30s: %s", k.getNachname(), r.toString()));
-                            }
-                        }
-                    }
-
-
-                }
-                case 10: {
-                    System.out.println();
-                    System.out.println("Auf Wiedersehen.");
-                    break;
-                }
-                default:
-                    System.out.println("Noch nicht implementiert.");
-            }
+            processUserInput(magic, inputReader, auswahl);
         }
     }
 
-    private static void printMenu() {
-        System.out.println("+==================================================================+");
-        System.out.println("| (01) Privatkunde anlegen                                         |");
-        System.out.println("| (02) Geschäftskunde anlegen                                      |");
-        System.out.println("| (03) Reservierung anlegen und Kundennummer zuordnen              |");
-        System.out.println("| (04) Kunde mit Reservierungen anzeigen (Auswahl durch Kundennr.) |");
-        System.out.println("| (05) Kunde mit Reservierungen anzeigen (Auswahl durch Name)      |");
-        System.out.println("| (06) Reservierung anzeigen (Auswahl durch Reservierungsnr.)      |");
-        System.out.println("| (07) Alle Kunden sortiert nach Namen anzeigen                    |");
-        System.out.println("| (08) Übersicht aller Bezahlmethoden                              |");
-        System.out.println("| (09) Alle Reservierungen eines Datums (sortiert nach Nachnamen)  |");
-        System.out.println("|                                                                  |");
-        System.out.println("| (10) Beenden                                                     |");
-        System.out.println("+==================================================================+");
-    }
-
+    /**
+     *
+     * @param magic
+     */
     private static void generateDumpDate(Reiseagentur magic) {
 
         Kunde kunde1 = new Privatkunde("Hr.",
@@ -267,5 +115,226 @@ public class Main {
         magic.addKunde(kunde4);
         magic.addKunde(kunde5);
         magic.addKunde(kunde6);
+    }
+
+    /**
+     * Gibt das Menu aus
+     */
+    private static void printMenu() {
+        System.out.println("+==================================================================+");
+        System.out.println("| (01) Privatkunde anlegen                                         |");
+        System.out.println("| (02) Geschäftskunde anlegen                                      |");
+        System.out.println("| (03) Reservierung anlegen und Kundennummer zuordnen              |");
+        System.out.println("| (04) Kunde mit Reservierungen anzeigen (Auswahl durch Kundennr.) |");
+        System.out.println("| (05) Kunde mit Reservierungen anzeigen (Auswahl durch Name)      |");
+        System.out.println("| (06) Reservierung anzeigen (Auswahl durch Reservierungsnr.)      |");
+        System.out.println("| (07) Alle Kunden sortiert nach Namen anzeigen                    |");
+        System.out.println("| (08) Übersicht aller Bezahlmethoden                              |");
+        System.out.println("| (09) Alle Reservierungen eines Datums (sortiert nach Nachnamen)  |");
+        System.out.println("|                                                                  |");
+        System.out.println("| (10) Beenden                                                     |");
+        System.out.println("+==================================================================+");
+    }
+
+    /**
+     * Führt weitere Anweisungen entsprechend der Usereingabe aus.
+     * @param magic
+     * @param inputReader
+     * @param auswahl
+     */
+    private static void processUserInput(Reiseagentur magic, Input inputReader, int auswahl) {
+        switch (auswahl) {
+            case 1: {
+                privatKundeAnlegen(magic, inputReader);
+                break;
+            }
+            case 2: {
+                geschaeftsKundeAnlegen(magic, inputReader);
+                break;
+            }
+            case 3: {
+                reservierungAnlegen(magic, inputReader);
+                break;
+            }
+            case 4: {
+                kundenDurchNummerSuchen(magic, inputReader);
+                break;
+            }
+            case 5: {
+                kundenDurchNameSuchen(magic, inputReader);
+                break;
+            }
+            case 6: {
+                reservierungSuchen(magic, inputReader);
+                break;
+            }
+            case 7: {
+                kundenSortiertAnzeigen(magic);
+                break;
+            }
+            case 8: {
+                bezahlmethodenAnzeigen(magic);
+                break;
+            }
+            case 9: {
+                reservierungenSortiertAnzeigen(magic, inputReader);
+                break;
+            }
+            case 10: {
+                beenden(inputReader);
+                break;
+            }
+            default:
+                System.out.println("Noch nicht implementiert.");
+        }
+    }
+
+    // CASES
+
+    /**
+     *
+     * @param magic
+     * @param inputReader
+     */
+    private static void privatKundeAnlegen(Reiseagentur magic, Input inputReader) {
+        System.out.println("Füllen Sie das folgende Formular aus: ");
+        Privatkunde kunde = Privatkunde.readPrivatKundeFromInput(inputReader);
+        magic.addKunde(kunde);
+        System.out.println("Privatkunde wurde erfolgreich erstellt.");
+    }
+
+    /**
+     *
+     * @param magic
+     * @param inputReader
+     */
+    private static void geschaeftsKundeAnlegen(Reiseagentur magic, Input inputReader) {
+        System.out.println("Füllen Sie das folgende Formular aus: ");
+        Geschaeftskunde kunde = Geschaeftskunde.readGeschaeftsKundeFromInput(inputReader);
+        magic.addKunde(kunde);
+        System.out.println("Geschäftskunde wurde erfolgreich erstellt.");
+    }
+
+    private static void reservierungAnlegen(Reiseagentur magic, Input inputReader) {
+        int reservierungsart = inputReader.readInt("0: Flug oder 1: Hotel  -  Reservierung", 0, 1);
+        Reservierung reservierung;
+        if (reservierungsart == 0) {
+            reservierung = Flugreservierung.readFlugreservierungFromInput(inputReader);
+        } else {
+            reservierung = Hotelreservierung.readHotelreservierungFromInput(inputReader);
+        }
+        Kunde kunde = inputReader.getKundeByKundennummer(magic);
+        kunde.addReservierung(reservierung);
+        System.out.println("Reservierung wurde erfolgreich erstellt und dem Kunden mit der Nummer '" + kunde.getKundenNummer() + "' zugeordnet");
+    }
+
+    private static void kundenDurchNummerSuchen(Reiseagentur magic, Input inputReader) {
+        Kunde k = inputReader.getKundeByKundennummer(magic);
+        if (k != null) {
+            Kunde.printLongTableHeader();
+            Kunde.printLongTableRow(k);
+            System.out.println();
+
+            if (!k.getReservierungen().isEmpty()) {
+                Reservierung.printLongTableHeader();
+                for (Reservierung r : k.getReservierungen().values()) {
+                    Reservierung.printLongTableRow(r);
+                }
+            }
+        }
+        System.out.println();
+    }
+
+    private static void kundenDurchNameSuchen(Reiseagentur magic, Input inputReader) {
+        String name = inputReader.read("Geben Sie den Namen (Vorname Nachname) ein: ");
+        Set<Kunde> filteredList = magic.getKunden()
+                .values()
+                .stream()
+                .filter((it) -> it.getName().trim().equalsIgnoreCase(name.trim()))
+                .collect(Collectors.toSet());
+        if (filteredList.isEmpty()) {
+            System.out.println("Keinen Kunden mit dem eingegeben Namen gefunden.");
+        }
+        else {
+            Kunde.printLongTableHeader();
+            for(Kunde k: filteredList) {
+                Kunde.printLongTableRow(k);
+
+                if (!k.getReservierungen().isEmpty()) {
+                    System.out.println();
+                    Reservierung.printLongTableHeader();
+                    for (Reservierung r : k.getReservierungen().values()) {
+                        Reservierung.printLongTableRow(r);
+                    }
+                }
+            }
+        }
+        System.out.println();
+    }
+
+    private static void reservierungSuchen(Reiseagentur magic, Input inputReader) {
+        Reservierung r = inputReader.getReservierungByReservierungsnnummer(magic);
+        if (r != null) {
+            Reservierung.printLongTableHeader();
+            Reservierung.printLongTableRow(r);
+        }
+        else {
+            System.out.println("Keine Reservierung mit der eingegebenen Nummer gefunden.");
+        }
+    }
+
+    private static void kundenSortiertAnzeigen(Reiseagentur magic) {
+        // sortieren der Kunden
+        List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
+        Collections.sort(sortedList); // sortiert
+
+        Kunde.printShortTableHeader();
+        for (Kunde k : sortedList) {
+            Kunde.printShortTableRow(k);
+        }
+    }
+
+    private static void bezahlmethodenAnzeigen(Reiseagentur magic) {
+        // bezahlmethoden
+        HashMap<PaymentType, Integer> payments = new HashMap<>();
+        for(PaymentType p: PaymentType.values()) {
+            payments.put(p, 0);
+        }
+
+        for(Kunde k: magic.getKunden().values()) {
+            for(Bezahlmethode b: k.getBezahlmethoden()) {
+                payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
+            }
+        }
+
+        Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
+
+        for(Map.Entry<PaymentType, Integer> e: sortedPayments.entrySet()) {
+            System.out.printf("%10s : %3s\n", e.getKey(), e.getValue());
+        }
+    }
+
+    private static void reservierungenSortiertAnzeigen(Reiseagentur magic, Input inputReader) {
+        // Alle reservierungen von einem Datum sortiert nach nachnamen
+        LocalDate date = inputReader.readDate("Von welchem Datum sind Reservierungen gesucht?");
+
+        List<Kunde> sortedKunden = magic.getKunden().values()
+                .stream()
+                .sorted(Comparator.comparing(Kunde::getNachname))
+                .collect(Collectors.toList());
+
+        for(Kunde k: sortedKunden) {
+            for(Reservierung r: k.getReservierungen().values()) {
+                if (r.getDatum().equals(date)) {
+                    System.out.println(String.format("%30s: %s", k.getNachname(), r.toString()));
+                }
+            }
+        }
+    }
+
+    private static void beenden(Input inputReader) {
+        inputReader.close();
+        System.out.println();
+        System.out.println("Auf Wiedersehen.");
     }
 }
