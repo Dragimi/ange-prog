@@ -12,6 +12,7 @@ public class Bezahlmethode {
 
     /**
      * Jede Bezahlmethode besteht aus einer Bezeichnung und einer kurzen Beschreibung
+     *
      * @param bezeichnung
      * @param beschreibung
      */

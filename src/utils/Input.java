@@ -7,6 +7,9 @@ import models.Reservierung;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -53,16 +56,16 @@ public class Input {
         return input;
     }
 
-    public Date readDate(String msg) {
+    public LocalDate readDate(String msg) {
         System.out.println(msg + "(dd.MM.yyyy)");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Date date;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate date;
         while (true) {
             String dateString = scanner.nextLine();
             try {
-                date = simpleDateFormat.parse(dateString);
+                date = LocalDate.parse(dateString, dateFormatter);
                 break;
-            } catch (ParseException e) {
+            } catch (DateTimeParseException e) {
                 System.out.println("Ihre Eingabe ist fehlerhaft. Geben Sie das Datum im richtigen Format erneut ein.");
             }
         }
@@ -81,7 +84,6 @@ public class Input {
         }
     }
 
-
     public Reservierung getReservierungByReservierungsnnummer(Reiseagentur reiseagentur) {
         System.out.println("Geben Sie die Reservierungsnnummer ein: ");
 
@@ -93,5 +95,9 @@ public class Input {
             }
         }
         return null;
+    }
+
+    public void close() {
+        this.scanner.close();
     }
 }

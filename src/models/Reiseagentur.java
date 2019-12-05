@@ -1,6 +1,5 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -35,6 +34,7 @@ public class Reiseagentur {
 
     /**
      * Fuegt einen {@link Kunde Kunden} in die Liste hinzu.
+     *
      * @param kunde
      * @return
      */
@@ -45,6 +45,7 @@ public class Reiseagentur {
 
     /**
      * Ueberschreibt die toString-Methode
+     *
      * @return String
      */
     @Override
