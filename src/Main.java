@@ -196,7 +196,7 @@ public class Main {
                 break;
             }
             case 12: {
-
+                kundenSortiertCSVExport();
                 break;
             }
             case 13: {
@@ -454,7 +454,43 @@ public class Main {
     }
 
     /**
-     * 
+     *
+     */
+    private static void kundenSortiertCSVExport() {
+        String path = inputReader.read("Geben Sie einen Pfad ein: ('./' für aktuellen Standard-Ordner)");
+
+        if (path.trim().equalsIgnoreCase("./")) {
+            path = FileSystems.getDefault().getPath("resources").toAbsolutePath().toString() + "/";
+        }
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        String filename = inputReader.read("Geben Sie einen Dateinamen ohne Endung ein: ") + ".csv";
+
+                // sortieren der Kunden
+        List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
+        Collections.sort(sortedList); // sortiert
+
+
+
+        FileWriter csvWriter = null;
+        try {
+            csvWriter = new FileWriter(path + filename);
+
+            csvWriter.append("Name,Anzahl Reservierungen,Email");
+
+            for(Kunde k: sortedList) {
+                csvWriter.append(String.format("\n%s,%d,%s", k.getName(), k.getReservierungen().size(), k.getEmail()));
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.printf("--> %d Datensätze wurden erfolgreich in die Datei '%s' erportiert.\n", sortedList.size(), path+filename);
+        } catch (IOException e) {
+            System.out.println("Es ist ein Problem beim Schreiben der .csv Datei aufgetreten. Versuchen Sie es später erneut.");
+        }
+    }
+    /**
+     *
      */
     private static void beenden() {
         inputReader.close();
