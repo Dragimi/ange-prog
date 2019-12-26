@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -11,12 +12,15 @@ import java.util.HashMap;
  * @see Adresse
  * @see Kunde
  */
-public class Reiseagentur {
+public class Reiseagentur implements Serializable {
 
     private String namen;
     private String ustIdNr;
     private Adresse adresse;
     private HashMap<String, Kunde> kunden;
+
+    private Reiseagentur() {
+    }
 
     /**
      * Jede Agentur benoetigt eine namen, eine umsatzsteuernummer und eine Adresse

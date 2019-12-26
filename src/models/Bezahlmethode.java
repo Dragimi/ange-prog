@@ -1,14 +1,19 @@
 package models;
 
 
+import java.io.Serializable;
+
 /**
  * Diese Klasse repraesentiert eine Bezahlmethode.
  * {@link Kunde Kunden} koennen bis zu drei Bezahlmethoden besitzen.
  */
-public class Bezahlmethode {
+public class Bezahlmethode implements Serializable {
 
     private PaymentType bezeichnung;
     private String beschreibung;
+
+    private Bezahlmethode() {
+    }
 
     /**
      * Jede Bezahlmethode besteht aus einer Bezeichnung und einer kurzen Beschreibung
