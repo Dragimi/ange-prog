@@ -2,15 +2,20 @@ package models;
 
 import utils.Input;
 
+import java.io.Serializable;
+
 /**
  * Adresse repräsentiert eine physiche Lokalisierung in einem Land.
  */
-public class Adresse {
+public class Adresse implements Serializable {
 
     private String strasse;
     private String hausnummer;
     private int plz;
     private String ort;
+
+    private Adresse() {
+    }
 
     /**
      * Jede Adresse besteht aus einer Strasse, einer Hausnummer, der Postleitzahl und einem Ort
