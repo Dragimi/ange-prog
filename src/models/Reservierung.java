@@ -2,13 +2,17 @@ package models;
 
 import utils.Utils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class Reservierung {
+public abstract class Reservierung implements Serializable {
 
     protected String reservierungsNr;
     protected LocalDate datum;
     protected double summe;
+
+    private Reservierung() {
+    }
 
     public Reservierung(LocalDate datum, double summe) {
         this.reservierungsNr = Utils.generateRandomReservierungsNummer();
@@ -26,8 +30,7 @@ public abstract class Reservierung {
         if (r instanceof Flugreservierung) {
             Flugreservierung f = (Flugreservierung) r;
             bemerkung = String.format("%s, von %s nach %s", f.getFlugnr(), f.getAbflughafen(), f.getZielflughafen());
-        }
-        else if (r instanceof Hotelreservierung){
+        } else if (r instanceof Hotelreservierung) {
             Hotelreservierung h = (Hotelreservierung) r;
             bemerkung = String.format("%s für %s", h.hotelname, h.reisedauer);
         }

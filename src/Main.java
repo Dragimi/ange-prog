@@ -2,7 +2,8 @@ import models.*;
 import utils.Input;
 import utils.Utils;
 
-import java.lang.reflect.Array;
+import java.io.*;
+import java.nio.file.FileSystems;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
@@ -12,32 +13,32 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Main {
 
+    private static Reiseagentur magic;
+    private static Input inputReader = new Input();
+
     public static void main(String[] args) {
-        Reiseagentur magic = new Reiseagentur(
-                "Magic Holidays Reiseagentur",
-                "DE812524001",
-                new Adresse("Hauptstraße", "5a", 10559, "Berlin")
-        );
+        Reiseagentur magic = null;
 
-        generateDumpDate(magic);
-
-        Input inputReader = new Input();
+        //magic = generateDumpDate();
         int auswahl = -1;
 
-        while (auswahl != 10) {
+        while (auswahl != 13) {
             printMenu();
-            auswahl = inputReader.readInt(null, 1, 10);
+            auswahl = inputReader.readInt(null, 1, 13);
 
-            processUserInput(magic, inputReader, auswahl);
+            processUserInput(auswahl);
         }
     }
 
     /**
      *
-     * @param magic
      */
-    private static void generateDumpDate(Reiseagentur magic) {
-
+    private static void generateDumpDate() {
+        magic = new Reiseagentur(
+                "Magic Holidays Reiseagentur",
+                "DE812524001",
+                new Adresse("Hauptstraße", "5a", 10559, "Berlin")
+        );
         Kunde kunde1 = new Privatkunde("Hr.",
                 "Max",
                 "Mustermann",
@@ -131,57 +132,75 @@ public class Main {
         System.out.println("| (07) Alle Kunden sortiert nach Namen anzeigen                    |");
         System.out.println("| (08) Übersicht aller Bezahlmethoden                              |");
         System.out.println("| (09) Alle Reservierungen eines Datums (sortiert nach Nachnamen)  |");
+        System.out.println("| (10) Daten Export                                                |");
+        System.out.println("| (11) Daten Import                                                |");
+        System.out.println("| (12) Kunden nach Namen sortiert als CSV-Datei exportieren        |");
         System.out.println("|                                                                  |");
-        System.out.println("| (10) Beenden                                                     |");
+        System.out.println("| (13) Beenden                                                     |");
         System.out.println("+==================================================================+");
     }
 
     /**
      * Führt weitere Anweisungen entsprechend der Usereingabe aus.
-     * @param magic
-     * @param inputReader
+     *
      * @param auswahl
      */
-    private static void processUserInput(Reiseagentur magic, Input inputReader, int auswahl) {
+    private static void processUserInput(int auswahl) {
+        if (magic == null && auswahl != 11) {
+            System.out.println("Reiseagentur noch nicht definiert. Bitte importieren Sie zunächst eine Agentur mit Hilfe Menueintrag 11.");
+            return;
+        }
         switch (auswahl) {
             case 1: {
-                privatKundeAnlegen(magic, inputReader);
+                privatKundeAnlegen();
                 break;
             }
             case 2: {
-                geschaeftsKundeAnlegen(magic, inputReader);
+                geschaeftsKundeAnlegen();
                 break;
             }
             case 3: {
-                reservierungAnlegen(magic, inputReader);
+                reservierungAnlegen();
                 break;
             }
             case 4: {
-                kundenDurchNummerSuchen(magic, inputReader);
+                kundenDurchNummerSuchen();
                 break;
             }
             case 5: {
-                kundenDurchNameSuchen(magic, inputReader);
+                kundenDurchNameSuchen();
                 break;
             }
             case 6: {
-                reservierungSuchen(magic, inputReader);
+                reservierungSuchen();
                 break;
             }
             case 7: {
-                kundenSortiertAnzeigen(magic);
+                kundenSortiertAnzeigen();
                 break;
             }
             case 8: {
-                bezahlmethodenAnzeigen(magic);
+                bezahlmethodenAnzeigen();
                 break;
             }
             case 9: {
-                reservierungenSortiertAnzeigen(magic, inputReader);
+                reservierungenSortiertAnzeigen();
                 break;
             }
             case 10: {
-                beenden(inputReader);
+                datenExport();
+                break;
+            }
+            case 11: {
+                datenImport();
+                break;
+            }
+            case 12: {
+                kundenSortiertCSVExport();
+                break;
+            }
+            case 13: {
+                beenden();
                 break;
             }
             default:
@@ -193,10 +212,8 @@ public class Main {
 
     /**
      *
-     * @param magic
-     * @param inputReader
      */
-    private static void privatKundeAnlegen(Reiseagentur magic, Input inputReader) {
+    private static void privatKundeAnlegen() {
         System.out.println("Füllen Sie das folgende Formular aus: ");
         Privatkunde kunde = Privatkunde.readPrivatKundeFromInput(inputReader);
         magic.addKunde(kunde);
@@ -205,17 +222,18 @@ public class Main {
 
     /**
      *
-     * @param magic
-     * @param inputReader
      */
-    private static void geschaeftsKundeAnlegen(Reiseagentur magic, Input inputReader) {
+    private static void geschaeftsKundeAnlegen() {
         System.out.println("Füllen Sie das folgende Formular aus: ");
         Geschaeftskunde kunde = Geschaeftskunde.readGeschaeftsKundeFromInput(inputReader);
         magic.addKunde(kunde);
         System.out.println("Geschäftskunde wurde erfolgreich erstellt.");
     }
 
-    private static void reservierungAnlegen(Reiseagentur magic, Input inputReader) {
+    /**
+     *
+     */
+    private static void reservierungAnlegen() {
         int reservierungsart = inputReader.readInt("0: Flug oder 1: Hotel  -  Reservierung", 0, 1);
         Reservierung reservierung;
         if (reservierungsart == 0) {
@@ -228,7 +246,10 @@ public class Main {
         System.out.println("Reservierung wurde erfolgreich erstellt und dem Kunden mit der Nummer '" + kunde.getKundenNummer() + "' zugeordnet");
     }
 
-    private static void kundenDurchNummerSuchen(Reiseagentur magic, Input inputReader) {
+    /**
+     *
+     */
+    private static void kundenDurchNummerSuchen() {
         Kunde k = inputReader.getKundeByKundennummer(magic);
         if (k != null) {
             Kunde.printLongTableHeader();
@@ -245,7 +266,10 @@ public class Main {
         System.out.println();
     }
 
-    private static void kundenDurchNameSuchen(Reiseagentur magic, Input inputReader) {
+    /**
+     *
+     */
+    private static void kundenDurchNameSuchen() {
         String name = inputReader.read("Geben Sie den Namen (Vorname Nachname) ein: ");
         Set<Kunde> filteredList = magic.getKunden()
                 .values()
@@ -254,10 +278,9 @@ public class Main {
                 .collect(Collectors.toSet());
         if (filteredList.isEmpty()) {
             System.out.println("Keinen Kunden mit dem eingegeben Namen gefunden.");
-        }
-        else {
+        } else {
             Kunde.printLongTableHeader();
-            for(Kunde k: filteredList) {
+            for (Kunde k : filteredList) {
                 Kunde.printLongTableRow(k);
 
                 if (!k.getReservierungen().isEmpty()) {
@@ -272,18 +295,23 @@ public class Main {
         System.out.println();
     }
 
-    private static void reservierungSuchen(Reiseagentur magic, Input inputReader) {
+    /**
+     *
+     */
+    private static void reservierungSuchen() {
         Reservierung r = inputReader.getReservierungByReservierungsnnummer(magic);
         if (r != null) {
             Reservierung.printLongTableHeader();
             Reservierung.printLongTableRow(r);
-        }
-        else {
+        } else {
             System.out.println("Keine Reservierung mit der eingegebenen Nummer gefunden.");
         }
     }
 
-    private static void kundenSortiertAnzeigen(Reiseagentur magic) {
+    /**
+     *
+     */
+    private static void kundenSortiertAnzeigen() {
         // sortieren der Kunden
         List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
         Collections.sort(sortedList); // sortiert
@@ -294,27 +322,33 @@ public class Main {
         }
     }
 
-    private static void bezahlmethodenAnzeigen(Reiseagentur magic) {
+    /**
+     *
+     */
+    private static void bezahlmethodenAnzeigen() {
         // bezahlmethoden
         HashMap<PaymentType, Integer> payments = new HashMap<>();
-        for(PaymentType p: PaymentType.values()) {
+        for (PaymentType p : PaymentType.values()) {
             payments.put(p, 0);
         }
 
-        for(Kunde k: magic.getKunden().values()) {
-            for(Bezahlmethode b: k.getBezahlmethoden()) {
+        for (Kunde k : magic.getKunden().values()) {
+            for (Bezahlmethode b : k.getBezahlmethoden()) {
                 payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
             }
         }
 
         Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
 
-        for(Map.Entry<PaymentType, Integer> e: sortedPayments.entrySet()) {
+        for (Map.Entry<PaymentType, Integer> e : sortedPayments.entrySet()) {
             System.out.printf("%10s : %3s\n", e.getKey(), e.getValue());
         }
     }
 
-    private static void reservierungenSortiertAnzeigen(Reiseagentur magic, Input inputReader) {
+    /**
+     *
+     */
+    private static void reservierungenSortiertAnzeigen() {
         // Alle reservierungen von einem Datum sortiert nach nachnamen
         LocalDate date = inputReader.readDate("Von welchem Datum sind Reservierungen gesucht?");
 
@@ -323,8 +357,8 @@ public class Main {
                 .sorted(Comparator.comparing(Kunde::getNachname))
                 .collect(Collectors.toList());
 
-        for(Kunde k: sortedKunden) {
-            for(Reservierung r: k.getReservierungen().values()) {
+        for (Kunde k : sortedKunden) {
+            for (Reservierung r : k.getReservierungen().values()) {
                 if (r.getDatum().equals(date)) {
                     System.out.println(String.format("%30s: %s", k.getNachname(), r.toString()));
                 }
@@ -332,7 +366,133 @@ public class Main {
         }
     }
 
-    private static void beenden(Input inputReader) {
+    /**
+     *
+     */
+    private static void datenExport() {
+        ObjectOutputStream oos = null;
+        FileOutputStream fout = null;
+        try {
+            String path = inputReader.read("Geben Sie einen Pfad ein: ('./' für aktuellen Standard-Ordner)");
+
+            if (path.trim().equalsIgnoreCase("./")) {
+                path = FileSystems.getDefault().getPath("resources").toAbsolutePath().toString() + "/";
+            }
+            if (!path.endsWith("/")) {
+                path += "/";
+            }
+
+            String filename = inputReader.read("Geben Sie einen Dateinamen ohne Endung ein: ") + ".ser";
+
+            fout = new FileOutputStream(path + filename, false);
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(magic);
+
+            System.out.println("Reiseagentur erfolgreich nach '" + path + filename + "' exportiert.");
+        } catch (Exception e) {
+            System.out.println("Es ist ein Fehler beim Exportieren aufgetreten. Versuchen Sie es später erneut.");
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private static void datenImport() {
+        ObjectInputStream ois = null;
+        FileInputStream fin = null;
+        try {
+            String path = inputReader.read("Geben Sie einen Pfad ein: ('./' für den aktuellen Standard-Ordner)");
+            if (path.trim().equalsIgnoreCase("./")) {
+                path = FileSystems.getDefault().getPath("resources").toAbsolutePath().toString() + "/";
+            }
+            if (!path.endsWith("/")) {
+                path += "/";
+            }
+
+            File[] list = new File(path).listFiles(pathname ->
+                    pathname.getAbsolutePath().endsWith(".ser")
+            );
+
+            if (list.length == 0) {
+                System.out.println("Der angegebene Ordner beinhaltet keine .ser-Datei. Versuchen Sie einen anderen Ordner.");
+                return;
+            } else {
+                System.out.println("Verfügbare Dateien: ");
+                for (File f : list) {
+                    System.out.println("--> " + f.getName());
+                }
+            }
+
+            String filename = inputReader.read("Geben Sie den zu importierenden Dateinamen mit Endung ein: ");
+
+            fin = new FileInputStream(path + filename);
+            ois = new ObjectInputStream(fin);
+            magic = (Reiseagentur) ois.readObject();
+
+        } catch (FileNotFoundException ex) {
+            System.out.println("Die angegeben Datei konnte nicht gefunden werden. Versuchen Sie es später erneut.");
+        } catch (Exception e) {
+            System.out.println("Es ist ein Fehler beim Importieren aufgetreten. Versuchen Sie es später erneut.");
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                    System.out.println("Reiseagentur erfolgreich geladen.");
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private static void kundenSortiertCSVExport() {
+        String path = inputReader.read("Geben Sie einen Pfad ein: ('./' für aktuellen Standard-Ordner)");
+
+        if (path.trim().equalsIgnoreCase("./")) {
+            path = FileSystems.getDefault().getPath("resources").toAbsolutePath().toString() + "/";
+        }
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        String filename = inputReader.read("Geben Sie einen Dateinamen ohne Endung ein: ") + ".csv";
+
+                // sortieren der Kunden
+        List<Kunde> sortedList = new ArrayList<>(magic.getKunden().values()); // noch nicht sortiert
+        Collections.sort(sortedList); // sortiert
+
+
+
+        FileWriter csvWriter = null;
+        try {
+            csvWriter = new FileWriter(path + filename);
+
+            csvWriter.append("Name,Anzahl Reservierungen,Email");
+
+            for(Kunde k: sortedList) {
+                csvWriter.append(String.format("\n%s,%d,%s", k.getName(), k.getReservierungen().size(), k.getEmail()));
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.printf("--> %d Datensätze wurden erfolgreich in die Datei '%s' erportiert.\n", sortedList.size(), path+filename);
+        } catch (IOException e) {
+            System.out.println("Es ist ein Problem beim Schreiben der .csv Datei aufgetreten. Versuchen Sie es später erneut.");
+        }
+    }
+    /**
+     *
+     */
+    private static void beenden() {
         inputReader.close();
         System.out.println();
         System.out.println("Auf Wiedersehen.");

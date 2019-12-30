@@ -2,6 +2,7 @@ package models;
 
 import utils.Utils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 /**
  * Diese Klasse repräsentiert einen Kunden welche bis zu drei Bezahlmethoden hat.
  */
-public abstract class Kunde implements Comparable<Kunde> {
+public abstract class Kunde implements Comparable<Kunde>, Serializable {
 
     static final int MAX_NUMBER_OF_RESERVATIONS = 100;
 
@@ -23,6 +24,9 @@ public abstract class Kunde implements Comparable<Kunde> {
     protected String email;
     protected ArrayList<Bezahlmethode> bezahlmethoden;
     protected HashMap<String, Reservierung> reservierungen;
+
+    private Kunde() {
+    }
 
     /**
      * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
