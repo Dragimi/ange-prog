@@ -1,7 +1,12 @@
 package models;
 
+import buchhaltung.Auditing;
+import buchhaltung.Buchhaltung;
+import buchhaltung.Kasse;
+
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Observable;
 
 /**
  * Diese Klasse symbolisiert eine Reiseagentur.
@@ -19,6 +24,10 @@ public class Reiseagentur implements Serializable {
     private Adresse adresse;
     private HashMap<String, Kunde> kunden;
 
+    private Kasse kasse;
+    private Buchhaltung buchhaltung;
+    private Auditing auditing;
+
     private Reiseagentur() {
     }
 
@@ -34,8 +43,16 @@ public class Reiseagentur implements Serializable {
         this.ustIdNr = ustIdNr;
         this.adresse = adresse;
         this.kunden = new HashMap<>();
+        this.kasse = Kasse.getInstance();
+        this.buchhaltung = Buchhaltung.getInstance();
+        this.auditing = Auditing.getInstance();
     }
 
+    public void initObserver() {
+        kasse.deleteObservers();
+        kasse.addObserver(buchhaltung);
+        kasse.addObserver(auditing);
+    }
     /**
      * Fuegt einen {@link Kunde Kunden} in die Liste hinzu.
      *
@@ -96,5 +113,29 @@ public class Reiseagentur implements Serializable {
 
     public void setKunden(HashMap<String, Kunde> kunden) {
         this.kunden = kunden;
+    }
+
+    public Kasse getKasse() {
+        return kasse;
+    }
+
+    public void setKasse(Kasse kasse) {
+        this.kasse = kasse;
+    }
+
+    public Buchhaltung getBuchhaltung() {
+        return buchhaltung;
+    }
+
+    public void setBuchhaltung(Buchhaltung buchhaltung) {
+        this.buchhaltung = buchhaltung;
+    }
+
+    public Auditing getAuditing() {
+        return auditing;
+    }
+
+    public void setAuditing(Auditing auditing) {
+        this.auditing = auditing;
     }
 }
