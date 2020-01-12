@@ -21,7 +21,7 @@ public class Hotelreservierung extends Reservierung {
 
     public static Hotelreservierung readHotelreservierungFromInput(Input input) {
         LocalDate datum = input.readDate("Reservierungsdatum: ");
-        int summe = input.readInt("Summe: ", 0, Integer.MAX_VALUE);
+        double summe = input.readDouble("Summe: ", 0, Double.MAX_VALUE);
         String hotelname = input.read("Hotelname: ");
         int duration = input.readInt("Reisedauer (in Tagen): ", 1, Integer.MAX_VALUE);
         return new Hotelreservierung(datum, summe, hotelname, Duration.of(duration, DAYS));

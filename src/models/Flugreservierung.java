@@ -19,7 +19,7 @@ public class Flugreservierung extends Reservierung {
 
     public static Flugreservierung readFlugreservierungFromInput(Input input) {
         LocalDate datum = input.readDate("Reservierungsdatum: ");
-        int summe = input.readInt("Summe: ", 0, Integer.MAX_VALUE);
+        double summe = input.readDouble("Summe: ", 0, Double.MAX_VALUE);
         String flugnr = input.read("Flugnr.");
         String abflughafen = input.read("Abflughafen: ");
         String zielflughafen = input.read("Zeilflughafen: ");

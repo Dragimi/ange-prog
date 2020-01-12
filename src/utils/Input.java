@@ -31,7 +31,29 @@ public class Input {
             try {
                 input = Integer.parseInt(inputString);
                 if (input < min || input > max) {
-                    System.out.println(String.format("Ihre Eingabe ist nicht im richtigen Intervall %02d-%02d", min, max));
+                    System.out.println(String.format("Ihre Eingabe ist nicht im richtigen Intervall [%02d, %02d]", min, max));
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Ihre Eingabe war fehlerhaft. Versuchen Sie es erneut.");
+            }
+        }
+        return input;
+    }
+
+    public double readDouble(String msg, double min, double max) {
+        if (msg != null && !msg.isEmpty()) {
+            System.out.println(msg);
+        }
+        double input;
+        while (true) {
+            String inputString = scanner.nextLine();
+            try {
+                inputString = inputString.replace(",", ".");
+                input = Double.parseDouble(inputString);
+                if (input < min || input > max) {
+                    System.out.println(String.format("Ihre Eingabe ist nicht im richtigen Intervall [%.4f, %.4f]", min, max));
                 } else {
                     break;
                 }
