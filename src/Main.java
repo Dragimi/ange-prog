@@ -355,10 +355,9 @@ public class Main {
             payments.put(p, 0);
         }
 
-        for (Kunde k : magic.getKunden().values()) {
-            /*for (Bezahlmethode b : k.getBezahlmethoden()) {
-                payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
-            }*/
+        for (Zahlung z : magic.getBuchhaltung().getZahlungen()) {
+            Bezahlmethode bezahlmethode = z.getBezahlmethode();
+            payments.put(bezahlmethode.getBezeichnung(), payments.get(bezahlmethode.getBezeichnung()) + 1);
         }
 
         Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
