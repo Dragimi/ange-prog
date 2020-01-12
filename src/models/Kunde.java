@@ -22,7 +22,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
     protected Adresse adresse;
     protected String telefonNummer;
     protected String email;
-    protected ArrayList<Bezahlmethode> bezahlmethoden;
     protected HashMap<String, Reservierung> reservierungen;
 
     private Kunde() {
@@ -32,7 +31,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
      * Ein Kunde besteht aus einem Vornamen , Nachnamen, einer Anrede, einem Geburtsdatum,
      * einer Pflichtadresse, einer Telefonnr., und einer E-Maialdresse.
      * <br>
-     * Um weitere Bezahlmethoden hinzuzfügen benutze, die Methode {@link Kunde#addZahlungsmethode(Bezahlmethode)}.
      *
      * @param anrede        - Hr. oder Fr.
      * @param vorname       -
@@ -41,7 +39,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
      * @param adresse       -
      * @param telefonNummer -
      * @param email         -
-     * @see Bezahlmethode
      * @see Adresse
      */
     protected Kunde(String anrede, String vorname, String nachname, LocalDate geburtstag, Adresse adresse, String telefonNummer, String email) {
@@ -53,7 +50,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
         this.adresse = adresse;
         this.telefonNummer = telefonNummer;
         this.email = email;
-        this.bezahlmethoden = new ArrayList<>();
         this.reservierungen = new HashMap<>();
     }
 
@@ -77,7 +73,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
                 "|Adresse                                 " +
                 "|Telefonnummer       " +
                 "|Email                         " +
-                "|Bezahlmethoden" +
                 "|Reservierungen|"));
         System.out.println(String.format("+------------" +
                 "+----------" +
@@ -89,12 +84,11 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
                 "+----------------------------------------" +
                 "+--------------------" +
                 "+------------------------------" +
-                "+--------------" +
                 "+--------------|"));
     }
 
     public static void printLongTableRow(Kunde k) {
-        System.out.println(String.format("|%-12s|%-10s|%-20s|%-7s|%-15s|%-15s|%-10s|%-40s|%-20s|%-30s|%-14s|%-14s|", k.kundenNummer,
+        System.out.println(String.format("|%-12s|%-10s|%-20s|%-7s|%-15s|%-15s|%-10s|%-40s|%-20s|%-30s|%-14s|", k.kundenNummer,
                 (k instanceof Privatkunde) ? "privat" : "geschäft",
                 (k instanceof Geschaeftskunde) ? ((Geschaeftskunde) k).firmenname : "",
                 k.anrede,
@@ -104,16 +98,10 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
                 k.adresse.shortStringRepresentation(),
                 k.telefonNummer,
                 k.email,
-                k.bezahlmethoden.size(),
                 k.reservierungen.size()));
     }
 
     abstract public String getName();
-
-    public boolean addZahlungsmethode(Bezahlmethode methode) {
-        this.bezahlmethoden.add(methode);
-        return true;
-    }
 
     public void addReservierung(Reservierung reservierung) {
         this.reservierungen.put(reservierung.reservierungsNr, reservierung);
@@ -193,14 +181,6 @@ public abstract class Kunde implements Comparable<Kunde>, Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public ArrayList<Bezahlmethode> getBezahlmethoden() {
-        return bezahlmethoden;
-    }
-
-    public void setBezahlmethoden(ArrayList<Bezahlmethode> bezahlmethoden) {
-        this.bezahlmethoden = bezahlmethoden;
     }
 
     public HashMap<String, Reservierung> getReservierungen() {

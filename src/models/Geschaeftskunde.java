@@ -43,7 +43,6 @@ public class Geschaeftskunde extends Kunde {
                 ", adresse=" + adresse +
                 ", telefonNummer='" + telefonNummer + '\'' +
                 ", email='" + email + '\'' +
-                ", bezahlmethoden=" + bezahlmethoden.size() +
                 ", reservierungen=" + reservierungen.size() +
                 '}';
     }

@@ -1,3 +1,4 @@
+import buchhaltung.Zahlung;
 import models.*;
 import utils.Input;
 import utils.Utils;
@@ -19,12 +20,12 @@ public class Main {
     public static void main(String[] args) {
         Reiseagentur magic = null;
 
-        //magic = generateDumpDate();
+        generateDumpDate();
         int auswahl = -1;
 
-        while (auswahl != 13) {
+        while (auswahl != 16) {
             printMenu();
-            auswahl = inputReader.readInt(null, 1, 13);
+            auswahl = inputReader.readInt(null, 1, 16);
 
             processUserInput(auswahl);
         }
@@ -39,6 +40,8 @@ public class Main {
                 "DE812524001",
                 new Adresse("Hauptstraße", "5a", 10559, "Berlin")
         );
+        magic.initObserver();
+
         Kunde kunde1 = new Privatkunde("Hr.",
                 "Max",
                 "Mustermann",
@@ -46,8 +49,8 @@ public class Main {
                 new Adresse("Julius-Leber-Str.", "234c", 38531, "Hamburg"),
                 "0176 123 452 12",
                 "max.mustermann@gmail.com");
-        kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.PAYPAL, "Konto: " + kunde1.getEmail()));
-        kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.VISA, "4235 7453 1234 7456"));
+        // kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.PAYPAL, "Konto: " + kunde1.getEmail()));
+        // kunde1.addZahlungsmethode(new Bezahlmethode(PaymentType.VISA, "4235 7453 1234 7456"));
         kunde1.addReservierung(new Hotelreservierung(Utils.strToDate("12.05.2020"), 403.35, "Estrel Hotel Berlin", Duration.of(2, DAYS)));
 
 
@@ -58,7 +61,7 @@ public class Main {
                 new Adresse("Ernst-Ruska-Ufer", "14", 40124, "München"),
                 "0163 646 123 24",
                 "m.m@yahoo.de");
-        kunde2.addZahlungsmethode(new Bezahlmethode(PaymentType.VISA, "4438 8123 9735 2345"));
+        // kunde2.addZahlungsmethode(new Bezahlmethode(PaymentType.VISA, "4438 8123 9735 2345"));
         kunde2.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "TL1923", "IST - Istanbul", "TXL - Tefel Berlin"));
         kunde2.addReservierung(new Hotelreservierung(Utils.strToDate("12.05.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(1, DAYS)));
 
@@ -81,7 +84,7 @@ public class Main {
                 "0177 123 342 12",
                 "andreas.mueller@spotify.com",
                 "Spotify Inc.");
-        kunde4.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
+        // kunde4.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
         kunde4.addReservierung(new Hotelreservierung(Utils.strToDate("17.06.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
 
         Kunde kunde5 = new Geschaeftskunde("Hr.",
@@ -92,7 +95,7 @@ public class Main {
                 "0178 823582384",
                 "p.schulz@audi.de",
                 "Audi GmbH");
-        kunde5.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
+        // kunde5.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Email"));
         kunde5.addReservierung(new Hotelreservierung(Utils.strToDate("31.03.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
         kunde5.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "L523", "TXL - Tegel Berlin", "Köln"));
 
@@ -104,7 +107,7 @@ public class Main {
                 "0178 872368235",
                 "simone.meier@zf.de",
                 "ZF Friedrichshafen AG");
-        kunde6.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Post"));
+        // kunde6.addZahlungsmethode(new Bezahlmethode(PaymentType.RECHNUNG, "Post"));
         kunde6.addReservierung(new Hotelreservierung(Utils.strToDate("31.03.2020"), 534.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
         kunde6.addReservierung(new Flugreservierung(Utils.strToDate("12.05.2020"), 120.53, "L523", "TXL - Tegel Berlin", "Köln"));
         kunde6.addReservierung(new Hotelreservierung(Utils.strToDate("10.01.2020"), 5334.12, "Hotel Adlon Berlin", Duration.of(3, DAYS)));
@@ -135,8 +138,11 @@ public class Main {
         System.out.println("| (10) Daten Export                                                |");
         System.out.println("| (11) Daten Import                                                |");
         System.out.println("| (12) Kunden nach Namen sortiert als CSV-Datei exportieren        |");
+        System.out.println("| (13) Reservierung Checkout                                       |");
+        System.out.println("| (14) Buchhaltungsliste zeigen                                    |");
+        System.out.println("| (15) Auditingliste zeigen                                        |");
         System.out.println("|                                                                  |");
-        System.out.println("| (13) Beenden                                                     |");
+        System.out.println("| (16) Beenden                                                     |");
         System.out.println("+==================================================================+");
     }
 
@@ -200,6 +206,18 @@ public class Main {
                 break;
             }
             case 13: {
+                reservierungCheckout();
+                break;
+            }
+            case 14: {
+                zeigeBuchhaltungsListe();
+                break;
+            }
+            case 15: {
+                zeigeAuditingListe();
+                break;
+            }
+            case 16: {
                 beenden();
                 break;
             }
@@ -211,7 +229,7 @@ public class Main {
     // CASES
 
     /**
-     *
+     * 01
      */
     private static void privatKundeAnlegen() {
         System.out.println("Füllen Sie das folgende Formular aus: ");
@@ -221,7 +239,7 @@ public class Main {
     }
 
     /**
-     *
+     * 02
      */
     private static void geschaeftsKundeAnlegen() {
         System.out.println("Füllen Sie das folgende Formular aus: ");
@@ -231,7 +249,7 @@ public class Main {
     }
 
     /**
-     *
+     * 03
      */
     private static void reservierungAnlegen() {
         int reservierungsart = inputReader.readInt("0: Flug oder 1: Hotel  -  Reservierung", 0, 1);
@@ -242,12 +260,17 @@ public class Main {
             reservierung = Hotelreservierung.readHotelreservierungFromInput(inputReader);
         }
         Kunde kunde = inputReader.getKundeByKundennummer(magic);
-        kunde.addReservierung(reservierung);
-        System.out.println("Reservierung wurde erfolgreich erstellt und dem Kunden mit der Nummer '" + kunde.getKundenNummer() + "' zugeordnet");
+        if (kunde == null) {
+            return;
+        }
+        else {
+            kunde.addReservierung(reservierung);
+            System.out.println("Reservierung wurde erfolgreich erstellt und dem Kunden mit der Nummer '" + kunde.getKundenNummer() + "' zugeordnet");
+        }
     }
 
     /**
-     *
+     * 04
      */
     private static void kundenDurchNummerSuchen() {
         Kunde k = inputReader.getKundeByKundennummer(magic);
@@ -267,7 +290,7 @@ public class Main {
     }
 
     /**
-     *
+     * 05
      */
     private static void kundenDurchNameSuchen() {
         String name = inputReader.read("Geben Sie den Namen (Vorname Nachname) ein: ");
@@ -296,7 +319,7 @@ public class Main {
     }
 
     /**
-     *
+     * 06
      */
     private static void reservierungSuchen() {
         Reservierung r = inputReader.getReservierungByReservierungsnnummer(magic);
@@ -309,7 +332,7 @@ public class Main {
     }
 
     /**
-     *
+     * 07
      */
     private static void kundenSortiertAnzeigen() {
         // sortieren der Kunden
@@ -323,7 +346,7 @@ public class Main {
     }
 
     /**
-     *
+     * 08
      */
     private static void bezahlmethodenAnzeigen() {
         // bezahlmethoden
@@ -332,10 +355,9 @@ public class Main {
             payments.put(p, 0);
         }
 
-        for (Kunde k : magic.getKunden().values()) {
-            for (Bezahlmethode b : k.getBezahlmethoden()) {
-                payments.put(b.getBezeichnung(), payments.get(b.getBezeichnung()) + 1);
-            }
+        for (Zahlung z : magic.getBuchhaltung().getZahlungen()) {
+            Bezahlmethode bezahlmethode = z.getBezahlmethode();
+            payments.put(bezahlmethode.getBezeichnung(), payments.get(bezahlmethode.getBezeichnung()) + 1);
         }
 
         Map<PaymentType, Integer> sortedPayments = Utils.sortMapByValues(payments);
@@ -346,7 +368,7 @@ public class Main {
     }
 
     /**
-     *
+     * 09
      */
     private static void reservierungenSortiertAnzeigen() {
         // Alle reservierungen von einem Datum sortiert nach nachnamen
@@ -367,7 +389,7 @@ public class Main {
     }
 
     /**
-     *
+     * 10
      */
     private static void datenExport() {
         ObjectOutputStream oos = null;
@@ -391,6 +413,7 @@ public class Main {
             System.out.println("Reiseagentur erfolgreich nach '" + path + filename + "' exportiert.");
         } catch (Exception e) {
             System.out.println("Es ist ein Fehler beim Exportieren aufgetreten. Versuchen Sie es später erneut.");
+            System.out.println(e.getMessage());
         } finally {
             if (oos != null) {
                 try {
@@ -403,7 +426,7 @@ public class Main {
     }
 
     /**
-     *
+     * 11
      */
     private static void datenImport() {
         ObjectInputStream ois = null;
@@ -436,16 +459,17 @@ public class Main {
             fin = new FileInputStream(path + filename);
             ois = new ObjectInputStream(fin);
             magic = (Reiseagentur) ois.readObject();
-
+            magic.initObserver();
+            System.out.println("Reiseagentur erfolgreich geladen.");
         } catch (FileNotFoundException ex) {
             System.out.println("Die angegeben Datei konnte nicht gefunden werden. Versuchen Sie es später erneut.");
         } catch (Exception e) {
             System.out.println("Es ist ein Fehler beim Importieren aufgetreten. Versuchen Sie es später erneut.");
+            System.out.println(e.getMessage());
         } finally {
             if (ois != null) {
                 try {
                     ois.close();
-                    System.out.println("Reiseagentur erfolgreich geladen.");
                 } catch (IOException e) {
                     // do nothing
                 }
@@ -454,7 +478,7 @@ public class Main {
     }
 
     /**
-     *
+     * 12
      */
     private static void kundenSortiertCSVExport() {
         String path = inputReader.read("Geben Sie einen Pfad ein: ('./' für aktuellen Standard-Ordner)");
@@ -489,8 +513,54 @@ public class Main {
             System.out.println("Es ist ein Problem beim Schreiben der .csv Datei aufgetreten. Versuchen Sie es später erneut.");
         }
     }
+
     /**
-     *
+     * 13
+     */
+    private static void reservierungCheckout() {
+        Reservierung reservierung = inputReader.getReservierungByReservierungsnnummer(magic);
+        if (reservierung == null) {
+            System.out.println("Keine Reservierung gefunden.");
+            return;
+        }
+        System.out.printf("Wie soll die Summe %.2f Euro der Reservierung '%s' bezahlt werden?\n", reservierung.getSumme(), reservierung.getReservierungsNr());
+        PaymentType[] paymentTypes = PaymentType.values();
+        for (int i = 0; i < paymentTypes.length; i++) {
+            System.out.printf("\t%d: %s\n", (i+1), paymentTypes[i]);
+        }
+        int auswahl = inputReader.readInt("", 1, paymentTypes.length + 1) - 1;
+        magic.getKasse().setBezahlmethode(new Bezahlmethode(paymentTypes[auswahl]," -- zusätzliche Information -- "));
+        magic.getKasse().bezahlen(reservierung.getSumme());
+    }
+
+    /**
+     * 14
+     */
+    private static void zeigeBuchhaltungsListe() {
+        int size = magic.getBuchhaltung().getZahlungen().size();
+        System.out.printf("Es befinden sich derzeit %d Einträge in der Buchhaltungsliste:\n", size);
+        if (size > 0) {
+            for (Zahlung z: magic.getBuchhaltung().getZahlungen()) {
+                System.out.printf("\t%8.2f (%s)\n", z.getBetrag(), z.getBezahlmethode().getBezeichnung());
+            }
+        }
+    }
+
+    /**
+     * 15
+     */
+    private static void zeigeAuditingListe() {
+        int size = magic.getAuditing().getZahlungen().size();
+        System.out.printf("Es befinden sich derzeit %d Einträge in der Auditingliste:\n", size);
+        if (size > 0) {
+            for (Zahlung z: magic.getAuditing().getZahlungen()) {
+                System.out.printf("\t%8.2f (%s)\n", z.getBetrag(), z.getBezahlmethode().getBezeichnung());
+            }
+        }
+    }
+
+    /**
+     * 16
      */
     private static void beenden() {
         inputReader.close();
