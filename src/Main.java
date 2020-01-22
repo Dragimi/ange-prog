@@ -1,4 +1,5 @@
 import buchhaltung.Zahlung;
+import gui.MainGUI;
 import models.*;
 import utils.Input;
 import utils.Utils;
@@ -20,7 +21,20 @@ public class Main {
     public static void main(String[] args) {
         Reiseagentur magic = null;
 
-        generateDumpDate();
+        // generateDumpDate();
+        int auswahl = inputReader.readInt("Wollen Sie mit einer GUI (0) oder CLI (1) starten?", 0, 1);
+        if (auswahl == 0) {
+            startGUI();
+        } else {
+            startCLI();
+        }
+    }
+
+    private static void startGUI() {
+        MainGUI gui = new MainGUI();
+    }
+
+    private static void startCLI() {
         int auswahl = -1;
 
         while (auswahl != 16) {
