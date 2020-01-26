@@ -1,4 +1,5 @@
 import buchhaltung.Zahlung;
+import gui.MainGUI;
 import models.*;
 import utils.Input;
 import utils.Utils;
@@ -18,9 +19,26 @@ public class Main {
     private static Input inputReader = new Input();
 
     public static void main(String[] args) {
+        // generateDumpDate();
+        startGUI();
+
+        /*
+        int auswahl = inputReader.readInt("Wollen Sie mit einer GUI (0) oder CLI (1) starten?", 0, 1);
+
+        if (auswahl == 0) {
+            startGUI();
+        } else {
+            startCLI();
+        }*/
+    }
+
+    private static void startGUI() {
+        MainGUI gui = new MainGUI();
+    }
+
+    private static void startCLI() {
         Reiseagentur magic = null;
 
-        generateDumpDate();
         int auswahl = -1;
 
         while (auswahl != 16) {
@@ -152,7 +170,7 @@ public class Main {
      * @param auswahl
      */
     private static void processUserInput(int auswahl) {
-        if (magic == null && auswahl != 11) {
+        if (magic == null && auswahl != 11 && auswahl != 16) {
             System.out.println("Reiseagentur noch nicht definiert. Bitte importieren Sie zunächst eine Agentur mit Hilfe Menueintrag 11.");
             return;
         }
