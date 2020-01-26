@@ -11,6 +11,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.IconUIResource;
+import javax.swing.text.IconView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +66,8 @@ public class MainGUI extends JFrame implements ActionListener {
 
         JMenuItem info_about = new JMenuItem("About");
         info_about.setMnemonic(KeyEvent.VK_A);
+        info_about.setActionCommand("info");
+        info_about.addActionListener(this);
         info.add(info_about);
 
         this.setJMenuBar(menubar);
@@ -87,6 +91,7 @@ public class MainGUI extends JFrame implements ActionListener {
         tfKundenName = new JTextField("", 30);
 
         btnSearchKundenName = new JButton("Suchen");
+        btnSearchKundenName.setActionCommand("search");
         btnSearchKundenName.addActionListener(this);
         searchPanel.add(kundennameLabel);
         searchPanel.add(tfKundenName);
@@ -260,20 +265,38 @@ public class MainGUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.resetLabels();
-        this.reservierungenListModel.clear();
+        switch (e.getActionCommand()) {
+            case "info": {
+                String path = FileSystems.getDefault().getPath("resources").toAbsolutePath().toString() + "/" + "img/htw-logo.png";
+                ImageIcon icon = new ImageIcon(path);
+                JOptionPane.showMessageDialog(MainGUI.this,
+                        "Dragana Mitrovic\n" +
+                                "MatrikelNr.: s0559694\n" +
+                                "Hochschule für Technik und Wirtschaft Berlin\n" +
+                                "s0559694@htw-berlin.de",
+                        "Information",
+                        JOptionPane.INFORMATION_MESSAGE,
+                        icon);
+                break;
+            }
+            case "search": {
+                this.resetLabels();
+                this.reservierungenListModel.clear();
 
-        String eingabe = tfKundenName.getText();
-        if (eingabe != null && !eingabe.isEmpty()) {
-            List<Kunde> foundKunden = magic.getKunden().values().stream()
-                    .filter((k) ->
-                            k.getName().toLowerCase().trim().replaceAll("\\s", "")
-                                    .contains(eingabe.toLowerCase().trim().replaceAll("\\s", "")))
-                    .collect(Collectors.toList());
+                String eingabe = tfKundenName.getText();
+                if (eingabe != null && !eingabe.isEmpty()) {
+                    List<Kunde> foundKunden = magic.getKunden().values().stream()
+                            .filter((k) ->
+                                    k.getName().toLowerCase().trim().replaceAll("\\s", "")
+                                            .contains(eingabe.toLowerCase().trim().replaceAll("\\s", "")))
+                            .collect(Collectors.toList());
 
-            this.updateKundenList(foundKunden);
-        } else {
-            this.updateKundenList(null);
+                    this.updateKundenList(foundKunden);
+                } else {
+                    this.updateKundenList(null);
+                }
+                break;
+            }
         }
     }
 }
