@@ -1,17 +1,29 @@
 package gui;
 
 import models.Adresse;
+import models.Kunde;
 import models.Reiseagentur;
+import models.Reservierung;
+import utils.Utils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.file.FileSystems;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class MainGUI extends JFrame {
+public class MainGUI extends JFrame implements ActionListener {
 
     private static final String KUNDEN_GEFUNDEN_PATTERN = "Kunden gefunden (%03d)";
 
@@ -20,12 +32,14 @@ public class MainGUI extends JFrame {
     JTextField tfKundenName;
     JButton btnSearchKundenName;
     JSplitPane splitPaneBottom;
-    JLabel lblKundenGefunden;
-    JList kundenList;
+    TitledBorder borderKundenGefunden;
+    DefaultListModel<Kunde> kundenListModel;
+    Kunde selectedKunde = null;
+
     JLabel lblKundenNummer;
     JLabel lblGeburtsdatum;
     JLabel lblAdresse;
-    JList listReservierungen;
+    DefaultListModel<Reservierung> reservierungenListModel;
 
     public MainGUI() {
         super("Reiseagentur");
@@ -34,6 +48,8 @@ public class MainGUI extends JFrame {
 
         this.initMenu();
         this.initContentView();
+        this.resetLabels();
+
         this.loadMagic();
 
         this.setSize(new Dimension(1200, 800));
@@ -59,7 +75,7 @@ public class MainGUI extends JFrame {
 
         JPanel panelTop = new JPanel();
         panelTop.setLayout(new BorderLayout());
-        panelTop.getInsets().set(16, 16, 16, 16);
+        panelTop.setBorder(new EmptyBorder(8, 8, 8, 8));
 
         lblReiseagentur = new JLabel("-- noch keine Agentur geladen --");
         lblReiseagentur.setHorizontalAlignment(SwingConstants.CENTER);
@@ -71,6 +87,7 @@ public class MainGUI extends JFrame {
         tfKundenName = new JTextField("", 30);
 
         btnSearchKundenName = new JButton("Suchen");
+        btnSearchKundenName.addActionListener(this);
         searchPanel.add(kundennameLabel);
         searchPanel.add(tfKundenName);
         searchPanel.add(btnSearchKundenName);
@@ -79,45 +96,100 @@ public class MainGUI extends JFrame {
         this.getContentPane().add(panelTop, BorderLayout.NORTH);
 
         JPanel panelBottomLeft = new JPanel(new BorderLayout());
-        lblKundenGefunden = new JLabel(String.format(KUNDEN_GEFUNDEN_PATTERN, 0));
-        lblKundenGefunden.getInsets().set(16, 16, 16, 16);
-        panelBottomLeft.add(lblKundenGefunden, BorderLayout.NORTH);
-        kundenList = new JList();
-        JScrollPane kundenScroll = new JScrollPane( kundenList );
+        borderKundenGefunden = new TitledBorder(String.format(KUNDEN_GEFUNDEN_PATTERN, 0));
+        panelBottomLeft.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(14, 14, 14, 14), borderKundenGefunden));
+
+        // Kundenliste initialisieren
+        JComponent kundenScroll = this.initKundenScrollView();
         panelBottomLeft.add(kundenScroll, BorderLayout.CENTER);
 
         JPanel panelBottomRight = new JPanel(new BorderLayout());
+        panelBottomRight.setBorder(new EmptyBorder(16, 16, 16, 16));
         JPanel panelKundenDetails = new JPanel(new GridLayout(3, 2));
         JLabel label1 = new JLabel("Kundennummer: ");
-        lblKundenNummer = new JLabel("K-xxx-xxx");
+        lblKundenNummer = new JLabel();
         JLabel label2 = new JLabel("Geburtsdatum: ");
-        lblGeburtsdatum = new JLabel("--.--.----");
+        lblGeburtsdatum = new JLabel();
         JLabel label3 = new JLabel("Adresse: ");
-        lblAdresse = new JLabel("--");
+        lblAdresse = new JLabel();
         panelKundenDetails.add(label1);
         panelKundenDetails.add(lblKundenNummer);
         panelKundenDetails.add(label2);
         panelKundenDetails.add(lblGeburtsdatum);
         panelKundenDetails.add(label3);
         panelKundenDetails.add(lblAdresse);
-        listReservierungen = new JList();
-        JScrollPane reservierungenScroll = new JScrollPane(listReservierungen);
+
+        JComponent reservierungenView = this.initReservierungenView();
 
         panelBottomRight.add(panelKundenDetails, BorderLayout.NORTH);
-        panelBottomRight.add(reservierungenScroll, BorderLayout.CENTER);
+        panelBottomRight.add(reservierungenView, BorderLayout.CENTER);
 
         splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelBottomLeft, panelBottomRight);
 
         this.getContentPane().add(splitPaneBottom, BorderLayout.CENTER);
-        this.pack();
         restoreDefaults();
+    }
+
+    private JComponent initKundenScrollView() {
+        kundenListModel = new DefaultListModel<>();
+        JList<Kunde> listKunden = new JList<>(kundenListModel);
+        listKunden.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listKunden.setLayoutOrientation(JList.VERTICAL);
+        listKunden.setVisibleRowCount(-1);
+        listKunden.setCellRenderer(new KundenCellRenderer());
+
+        listKunden.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+
+                    int index = listKunden.getSelectedIndex();
+                    if (index == -1) {
+                        //No selection, disable fire button.
+
+                    } else {
+                        //Selection, enable the fire button.
+                        MainGUI.this.selectedKunde = kundenListModel.get(index);
+                        MainGUI.this.updateContent();
+                    }
+                }
+            }
+        });
+        return new JScrollPane(listKunden);
+    }
+
+    private JComponent initReservierungenView() {
+        reservierungenListModel = new DefaultListModel<>();
+        JList<Reservierung> listReservierungen = new JList<>(reservierungenListModel);
+        listReservierungen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listReservierungen.setLayoutOrientation(JList.VERTICAL);
+        listReservierungen.setVisibleRowCount(-1);
+        listReservierungen.setCellRenderer(new ReservierungenCellRenderer());
+
+        listReservierungen.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+
+                    int index = listReservierungen.getSelectedIndex();
+                    if (index == -1) {
+                        //No selection, disable fire button.
+
+                    } else {
+                        //Selection, enable the fire button.
+
+                    }
+                }
+            }
+        });
+        return new JScrollPane(listReservierungen);
     }
 
     private void restoreDefaults() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                splitPaneBottom.setDividerLocation(.999);
+                splitPaneBottom.setDividerLocation(.5);
             }
         });
     }
@@ -133,7 +205,7 @@ public class MainGUI extends JFrame {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if (magic == null){
+        if (magic == null) {
             // todo register new reiseagentur over gui
             magic = new Reiseagentur(
                     "Magic Holidays Reiseagentur",
@@ -142,6 +214,66 @@ public class MainGUI extends JFrame {
             );
         }
         magic.initObserver();
+        this.setTitle(magic.getNamen());
         lblReiseagentur.setText(magic.getNamen());
+        this.updateKundenList(null);
+    }
+
+    private void resetLabels() {
+        lblKundenNummer.setText("K-xxx-xxx");
+        lblGeburtsdatum.setText("--.--.----");
+        lblAdresse.setText("--");
+        borderKundenGefunden.setTitle(String.format(KUNDEN_GEFUNDEN_PATTERN, 0));
+    }
+
+    private void updateKundenList(List<Kunde> foundKunden) {
+        kundenListModel.clear();
+        if (foundKunden == null) {
+            for (Kunde k : magic.getKunden().values()) {
+                kundenListModel.addElement(k);
+            }
+            borderKundenGefunden.setTitle(String.format(KUNDEN_GEFUNDEN_PATTERN, magic.getKunden().size()));
+        } else {
+            for (Kunde k : foundKunden) {
+                kundenListModel.addElement(k);
+            }
+            System.out.println(foundKunden.size());
+            borderKundenGefunden.setTitle(String.format(KUNDEN_GEFUNDEN_PATTERN, foundKunden.size()));
+        }
+        this.repaint();
+    }
+
+    private void updateContent() {
+        if (this.selectedKunde == null) {
+            this.resetLabels();
+        } else {
+            lblKundenNummer.setText(this.selectedKunde.getKundenNummer());
+            lblGeburtsdatum.setText(Utils.dateToStr(this.selectedKunde.getGeburtstag()));
+            lblAdresse.setText(this.selectedKunde.getAdresse().shortStringRepresentation());
+
+            reservierungenListModel.clear();
+            for(Reservierung r: this.selectedKunde.getReservierungen().values()) {
+                reservierungenListModel.addElement(r);
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        this.resetLabels();
+        this.reservierungenListModel.clear();
+
+        String eingabe = tfKundenName.getText();
+        if (eingabe != null && !eingabe.isEmpty()) {
+            List<Kunde> foundKunden = magic.getKunden().values().stream()
+                    .filter((k) ->
+                            k.getName().toLowerCase().trim().replaceAll("\\s", "")
+                                    .contains(eingabe.toLowerCase().trim().replaceAll("\\s", "")))
+                    .collect(Collectors.toList());
+
+            this.updateKundenList(foundKunden);
+        } else {
+            this.updateKundenList(null);
+        }
     }
 }
